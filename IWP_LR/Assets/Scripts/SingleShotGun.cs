@@ -7,6 +7,9 @@ public class SingleShotGun : Gun
 {
 	[SerializeField] Camera cam;
 
+	float maxRaycastDistance = 5f; // Set your desired maximum raycast distance here
+
+
 	PhotonView PV;
 
 	void Awake()
@@ -23,9 +26,10 @@ public class SingleShotGun : Gun
 	{
 		Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
 		ray.origin = cam.transform.position;
-		if(Physics.Raycast(ray, out RaycastHit hit))
+		if(Physics.Raycast(ray, out RaycastHit hit, maxRaycastDistance))
 		{
-			hit.collider.gameObject.GetComponent<IDamageable>()?.TakeDamage(((GunInfo)itemInfo).damage);
+			Vector3 knockbackDirection = (hit.point - transform.position).normalized;
+			hit.collider.gameObject.GetComponent<IDamageable>()?.TakeDamage(((GunInfo)itemInfo).damage, knockbackDirection);
 			PV.RPC("RPC_Shoot", RpcTarget.All, hit.point, hit.normal);
 		}
 	}
@@ -41,4 +45,5 @@ public class SingleShotGun : Gun
 			bulletImpactObj.transform.SetParent(colliders[0].transform);
 		}
 	}
+
 }

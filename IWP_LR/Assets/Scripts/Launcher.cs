@@ -5,6 +5,7 @@ using Photon.Pun;
 using TMPro;
 using Photon.Realtime;
 using System.Linq;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -59,6 +60,11 @@ public class Launcher : MonoBehaviourPunCallbacks
 		roomNameText.text = PhotonNetwork.CurrentRoom.Name;
 
 		Player[] players = PhotonNetwork.PlayerList;
+
+		int randomTaggerIndex = Random.Range(0, players.Length);
+		Hashtable customRoomProperties = new ExitGames.Client.Photon.Hashtable();
+		customRoomProperties.Add("Tagger", randomTaggerIndex);
+		PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
 
 		foreach(Transform child in playerListContent)
 		{

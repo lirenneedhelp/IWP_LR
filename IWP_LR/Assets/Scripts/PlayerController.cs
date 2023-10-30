@@ -30,9 +30,15 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	PhotonView PV;
 
 	const float maxHealth = 100f;
+
+	const int knockbackForce = 5;
+
 	float currentHealth = maxHealth;
 
 	PlayerManager playerManager;
+
+	private float ticksSinceLastAttack = 0f;
+	private float attackCooldown = 0.5f; // Change this to set the desired attack cooldown time
 
 	void Awake()
 	{
@@ -40,6 +46,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		PV = GetComponent<PhotonView>();
 
 		playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
 	}
 
 	void Start()
@@ -64,6 +72,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		Look();
 		Move();
 		Jump();
+		
+		// Increment ticks since last attack
+    	ticksSinceLastAttack += Time.deltaTime;
 
 		for(int i = 0; i < items.Length; i++)
 		{
@@ -96,9 +107,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 				EquipItem(itemIndex - 1);
 			}
 		}
+		
 
-		if(Input.GetMouseButtonDown(0))
+		// CODE FOR SHOOTING!
+		if(Input.GetMouseButtonDown(0) && ticksSinceLastAttack >= attackCooldown)
 		{
+			// Reset ticks since last attack
+        	ticksSinceLastAttack = 0f;
 			items[itemIndex].Use();
 		}
 
@@ -178,9 +193,25 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		rb.MovePosition(rb.position + transform.TransformDirection(moveAmount) * Time.fixedDeltaTime);
 	}
 
-	public void TakeDamage(float damage)
+	void Die()
+	{
+		playerManager.Die();
+	}
+
+	public void ApplyKnockback(Vector3 knockbackDirection)
+    {
+        // Calculate knockback velocity using current velocity and additional knockback force
+        Vector3 knockbackVelocity = knockbackDirection.normalized * knockbackForce;
+		knockbackVelocity.y += 0.5f;
+        PV.RPC("ApplyKnockbackRPC", PV.Owner, knockbackVelocity);
+        
+    }
+
+	public void TakeDamage(float damage, Vector3 dir)
 	{
 		PV.RPC(nameof(RPC_TakeDamage), PV.Owner, damage);
+		ApplyKnockback(dir);
+		PV.RPC(nameof(RPC_SwapTagger), RpcTarget.All);
 	}
 
 	[PunRPC]
@@ -197,8 +228,27 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		}
 	}
 
-	void Die()
+	[PunRPC]
+    private void ApplyKnockbackRPC(Vector3 knockbackVelocity)
+    {
+        // Apply the received knockback velocity to the rigidbody for remote players
+        rb.velocity = knockbackVelocity;
+    }
+
+	[PunRPC]
+	void RPC_SwapTagger(PhotonMessageInfo info)
 	{
-		playerManager.Die();
+		PlayerManager sender = PlayerManager.Find(info.Sender);
+		Debug.LogError("Sender:" + sender.PV.Owner);
+		Debug.LogError("Receiver:" + PV.Owner);
+		
+		if (sender.isTagger != playerManager.isTagger && sender.isTagger)
+		{
+			Debug.Log(info.Sender + " tagged " + PV.Owner);
+			sender.SwapTagger(false);
+			playerManager.isTagger = true;
+			Debug.LogError(playerManager.isTagger);
+		}
 	}
+
 }
