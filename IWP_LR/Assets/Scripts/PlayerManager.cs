@@ -88,8 +88,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	public void SwapTagger(bool state)
 	{
-		Debug.LogError(PV.Owner);
-		//PV.RPC(nameof(RPC_LocalTagger), RpcTarget.All, state);
+		//Debug.LogError(PV.Owner);
+		PV.RPC(nameof(RPC_LocalTagger), RpcTarget.All, state);
 	}
 
 	[PunRPC]
