@@ -239,15 +239,16 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	void RPC_SwapTagger(PhotonMessageInfo info)
 	{
 		PlayerManager sender = PlayerManager.Find(info.Sender);
-		Debug.LogError("Sender:" + sender.PV.Owner);
-		Debug.LogError("Receiver:" + PV.Owner);
+		//Debug.LogError("Sender:" + sender.PV.Owner);
+		//Debug.LogError("Receiver:" + PV.Owner);
 		
 		if (sender.isTagger != playerManager.isTagger && sender.isTagger)
 		{
-			Debug.Log(info.Sender + " tagged " + PV.Owner);
+			//Debug.Log(info.Sender + " tagged " + PV.Owner);
 			sender.SwapTagger(false);
 			playerManager.isTagger = true;
-			Debug.LogError(playerManager.isTagger);
+			EventManager.AnnounceTaggedPlayer(PV.ViewID);	
+			//Debug.LogError(playerManager.isTagger);
 		}
 	}
 
