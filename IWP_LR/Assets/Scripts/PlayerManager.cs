@@ -6,6 +6,7 @@ using Photon.Realtime;
 using System.Linq;
 using System.IO;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using UnityEngine.SceneManagement;
 
 public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 {
@@ -47,26 +48,30 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 			PV.RPC(nameof(RPC_NewTagger), RpcTarget.All, TagManager.Instance.tagger);	
 		}
 		
-		//PV.RPC(nameof(ChangeColorTag), RpcTarget.All);
 	}
 
 	void CreateController()
 	{
 		Transform spawnpoint = SpawnManager.Instance.GetSpawnpoint();
-		controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { PV.ViewID });
+		controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Bear"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { PV.ViewID });
 		username = controller.GetComponentInChildren<UsernameDisplay>();
 	}
 
 	public void Die()
 	{
 		PhotonNetwork.Destroy(controller);
-		CreateController();
+		RoomManager.Instance.PhotonDestroy();
+		ToggleMouse.OnCursor();
+		SceneManager.LoadScene(0);
+		// CreateController();
+		PhotonNetwork.LeaveRoom();
 
-		deaths++;
 
-		Hashtable hash = new Hashtable();
-		hash.Add("deaths", deaths);
-		PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+		// deaths++;
+
+		// Hashtable hash = new Hashtable();
+		// hash.Add("deaths", deaths);
+		// PhotonNetwork.LocalPlayer.SetCustomProperties(hash);	
 	}
 
 	public void GetKill()
@@ -114,13 +119,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		//username.text.color = isTagger ? Color.red : Color.green;
 		
     }
-
-	[PunRPC]
-	void ChangeColorTag()
-	{
-		Debug.LogError(PhotonNetwork.LocalPlayer + "changing color");
-		username.text.color = isTagger ? Color.red : Color.green;
-	}
 
 	#endregion
 

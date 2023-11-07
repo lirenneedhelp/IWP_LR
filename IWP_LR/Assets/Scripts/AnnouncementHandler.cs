@@ -33,8 +33,8 @@ public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
             // Display an announcement or perform any other relevant actions.
 
             // TO DO: UPDATE PHOTON CHAT
-            txt.text = taggedPV.Owner.NickName + "is 'IT'!"; 
-            Debug.LogError(taggedPV.Owner.NickName + "is 'IT'!");
+            txt.text = taggedPV.Owner.NickName + " is 'IT'!"; 
+            Debug.LogError(taggedPV.Owner.NickName + " is 'IT'!");
         }
     }
 }

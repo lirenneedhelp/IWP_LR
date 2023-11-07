@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	[SerializeField] GameObject cameraHolder;
 
-	[SerializeField] float mouseSensitivity, sprintSpeed, walkSpeed, jumpForce, smoothTime;
+	[SerializeField] float mouseSensitivity, sprintSpeed, walkSpeed, jumpForce, smoothTime, taggerSpeedMultiplier;
 
 	[SerializeField] Item[] items;
 
@@ -46,8 +46,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		PV = GetComponent<PhotonView>();
 
 		playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
-		Cursor.lockState = CursorLockMode.Locked;
-		Cursor.visible = false;
+		ToggleMouse.OffCursor();
 	}
 
 	void Start()
@@ -136,7 +135,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	void Move()
 	{
 		Vector3 moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-
+		float speedMultiplier = playerManager.isTagger ? taggerSpeedMultiplier : 1f;
 		moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed), ref smoothMoveVelocity, smoothTime);
 	}
 
@@ -209,7 +208,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	public void TakeDamage(float damage, Vector3 dir)
 	{
-		PV.RPC(nameof(RPC_TakeDamage), PV.Owner, damage);
+		//PV.RPC(nameof(RPC_TakeDamage), PV.Owner, damage);
 		ApplyKnockback(dir);
 		PV.RPC(nameof(RPC_SwapTagger), RpcTarget.All);
 	}

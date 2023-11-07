@@ -433,6 +433,7 @@ MonoBehaviour:
   walkSpeed: 3
   jumpForce: 300
   smoothTime: 0.15
+  taggerSpeedMultiplier: 1.5
   items:
   - {fileID: 6732414030161505931}
   - {fileID: 3968076902418886796}
@@ -1149,6 +1150,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1488053958305132835}
     m_Modifications:
+    - target: {fileID: 2784885922100668057, guid: 72a2e19af4e54e9428e69a0d36a322af,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2863841947486143476, guid: 72a2e19af4e54e9428e69a0d36a322af,
         type: 3}
       propertyPath: m_Pivot.x

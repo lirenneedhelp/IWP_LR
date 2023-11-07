@@ -11,11 +11,11 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
 	void Awake()
 	{
-		if(Instance)
-		{
-			Destroy(gameObject);
-			return;
-		}
+		// if(Instance)
+		// {
+		// 	Destroy(gameObject);
+		// 	return;
+		// }
 		DontDestroyOnLoad(gameObject);
 		Instance = this;
 	}
@@ -38,5 +38,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
 		{
 			PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerManager"), Vector3.zero, Quaternion.identity);
 		}
+	}
+
+	public void PhotonDestroy()
+	{
+		PhotonNetwork.Destroy(photonView);
 	}
 }

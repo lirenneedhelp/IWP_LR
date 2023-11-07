@@ -11,7 +11,9 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     TMP_Text text;
 
     [SerializeField]
-    TMP_Text alive_Text;
+    TMP_Text alive_Text, goal_Text;
+
+    PlayerManager player;
 
     private float currentRoundTime;
 
@@ -19,6 +21,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         StartRound();
         UpdatePeopleStatus();
+        player = PlayerManager.Find(PhotonNetwork.LocalPlayer);
     }
 
     private void Update()
@@ -28,6 +31,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
         // Update round timer for all players
         UpdateRoundTimer(currentRoundTime);
+        UpdatePeopleStatus();
+        UpdateObjective();
 
         // End the round if the timer reaches 0
         if (currentRoundTime <= 0f)
@@ -48,6 +53,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     private void EndRound()
     {
         // Perform end of round logic here
+        photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
+
         // Start a new round
         StartRound();
     }
@@ -57,6 +64,12 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         // Handle round start logic here (if any)
         Debug.Log("Round Started!");
+    }
+    [PunRPC]
+    private void RPC_EndRound()
+    {
+        if (player.isTagger)
+            player.Die();
     }
 
     private void UpdateRoundTimer(float time)
@@ -72,6 +85,20 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     private void UpdatePeopleStatus()
     {
         alive_Text.text = "Alive: " + PhotonNetwork.PlayerList.Length;
+    }
+
+    private void UpdateObjective()
+    {
+        if (player.isTagger)
+        {
+            goal_Text.text = "Goal: Hunt em down!";
+            goal_Text.color = Color.red;
+        }
+        else
+        {
+            goal_Text.text = "Goal: Run Away!";
+            goal_Text.color = Color.green;
+        }
     }
 
     // Implement IPunObservable interface methods for manual synchronization
