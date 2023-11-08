@@ -45,6 +45,8 @@ public class ChatManager : MonoBehaviourPunCallbacks
             Cursor.visible = messageInput.gameObject.activeInHierarchy;
             messageInput.ActivateInputField();
 
+
+
             //inputField.text = string.Empty;
         }
     }

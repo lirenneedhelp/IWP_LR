@@ -17,6 +17,7 @@ public class PlayerGroundCheck : MonoBehaviour
 			return;
 
 		playerController.SetGroundedState(true);
+		playerController.animator.SetBool("IsJump", false);
 	}
 
 	void OnTriggerExit(Collider other)

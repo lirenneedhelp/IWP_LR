@@ -61,10 +61,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 
 		Player[] players = PhotonNetwork.PlayerList;
 
-		int randomTaggerIndex = Random.Range(0, players.Length);
-		Hashtable customRoomProperties = new ExitGames.Client.Photon.Hashtable();
-		customRoomProperties.Add("Tagger", randomTaggerIndex);
-		PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
+		TagManager.GenerateTagger();
 
 		foreach(Transform child in playerListContent)
 		{

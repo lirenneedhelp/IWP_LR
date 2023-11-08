@@ -2,7 +2,6 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
-
 public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public float roundDuration = 300f; // Round duration in seconds (5 minutes in this example)
@@ -52,17 +51,31 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void EndRound()
     {
+        
         // Perform end of round logic here
         photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
 
-        // Start a new round
-        StartRound();
+
+        if (PhotonNetwork.PlayerList.Length > 1)
+        {
+            // Start a new round
+            StartRound();
+        }
+        else
+        {
+            // Win Lobby
+            PhotonNetwork.LoadLevel(2);
+        }
     }
 
     [PunRPC]
     private void RPC_StartRound()
     {
-        // Handle round start logic here (if any)
+        if (PhotonNetwork.IsMasterClient)
+        {
+            TagManager.GenerateTagger();
+        }
+
         Debug.Log("Round Started!");
     }
     [PunRPC]

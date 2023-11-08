@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+
 
 public class TagManager : MonoBehaviour
 {
     public static TagManager Instance = null;
 
-    public Photon.Realtime.Player tagger;
+    public Player tagger;
     // Start is called before the first frame update
     void Awake()
     {
         Instance = this;
-
-        // // Get all players in the room
-		// Photon.Realtime.Player[] players = PhotonNetwork.PlayerList;
-
-		// // Randomly choose a tagger
-		// int randomTaggerIndex = Random.Range(0, players.Length);
-		// tagger = players[randomTaggerIndex];
     }
+
+    public static void GenerateTagger()
+    {
+        Player[] players = PhotonNetwork.PlayerList;
+
+        int randomTaggerIndex = Random.Range(0, players.Length);
+        Hashtable customRoomProperties = new ();
+        customRoomProperties.Add("Tagger", randomTaggerIndex);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
+    }
+
 }
