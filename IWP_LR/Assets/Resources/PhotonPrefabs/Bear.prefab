@@ -1529,21 +1529,21 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters:
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: IsAttacking
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: IsJump
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: IsWalking
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: IsSprinting
   m_SynchronizeLayers:
-  - SynchronizeType: 0
+  - SynchronizeType: 2
     LayerIndex: 0
-  - SynchronizeType: 0
+  - SynchronizeType: 2
     LayerIndex: 1
 --- !u!1 &5582529185452768911
 GameObject:
