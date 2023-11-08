@@ -61,8 +61,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 
 		Player[] players = PhotonNetwork.PlayerList;
 
-		TagManager.GenerateTagger();
-
 		foreach(Transform child in playerListContent)
 		{
 			Destroy(child.gameObject);
@@ -86,6 +84,13 @@ public class Launcher : MonoBehaviourPunCallbacks
 		errorText.text = "Room Creation Failed: " + message;
 		Debug.LogError("Room Creation Failed: " + message);
 		MenuManager.Instance.OpenMenu("error");
+	}
+
+	public override void OnCreatedRoom()
+	{
+		Hashtable customRoomProperties = new ();
+        customRoomProperties.Add("Tagger", 0);
+        PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
 	}
 
 	public void StartGame()

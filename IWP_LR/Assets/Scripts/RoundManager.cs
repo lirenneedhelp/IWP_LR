@@ -44,9 +44,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     private void StartRound()
     {
         currentRoundTime = roundDuration;
-
         // Call RPC to sync round start time with all players
-        photonView.RPC(nameof(RPC_StartRound), RpcTarget.All);
+        photonView.RPC(nameof(RPC_StartRound), RpcTarget.All, 0);
     }
 
     private void EndRound()
@@ -64,16 +63,16 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             // Win Lobby
-            PhotonNetwork.LoadLevel(2);
+            //PhotonNetwork.LoadLevel(2);
         }
     }
 
     [PunRPC]
-    private void RPC_StartRound()
+    private void RPC_StartRound(int randomSeed)
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            TagManager.GenerateTagger();
+            TagManager.GenerateTagger(randomSeed);
         }
 
         Debug.Log("Round Started!");
@@ -84,7 +83,6 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         if (player.isTagger)
             player.Die();
     }
-
     private void UpdateRoundTimer(float time)
     {
         // Calculate minutes and seconds from the remaining time
