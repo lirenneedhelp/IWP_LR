@@ -115,8 +115,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		if(Input.GetMouseButtonDown(0) && ticksSinceLastAttack >= attackCooldown)
 		{
 			// Reset ticks since last attack
-        	ticksSinceLastAttack = 0f;
+			ticksSinceLastAttack = 0f;
 			items[itemIndex].Use();
+		}
+
+		if (Input.GetMouseButtonDown(0))
+		{
+			animator.SetTrigger("IsAttack");
 		}
 
 		if(transform.position.y < -10f) // Die if you fall out of the world
@@ -137,10 +142,20 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	void Move()
 	{
-		Vector3 moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+		float x = Input.GetAxisRaw("Horizontal");
+		float z = Input.GetAxisRaw("Vertical");
+
+		float move = x + z;
 		float speedMultiplier = playerManager.isTagger ? taggerSpeedMultiplier : 1f;
-		moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed), ref smoothMoveVelocity, smoothTime);
-		animator.SetBool("IsWalking", true);
+
+		bool IsSprint = Input.GetKey(KeyCode.LeftShift);
+		
+		animator.SetBool("IsWalking", move != 0);
+		animator.SetBool("IsSprinting", IsSprint);
+
+		Vector3 moveDir = new Vector3(x, 0, z).normalized;
+		moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (IsSprint ? sprintSpeed : walkSpeed), ref smoothMoveVelocity, smoothTime);
+		
 	}
 
 	void Jump()
