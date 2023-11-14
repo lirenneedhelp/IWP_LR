@@ -240,7 +240,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4887315615960254, guid: fc723164fcb3394489548dfd87d02024, type: 3}
       propertyPath: m_RootOrder
-      value: 10
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 4887315615960254, guid: fc723164fcb3394489548dfd87d02024, type: 3}
       propertyPath: m_LocalScale.x
@@ -437,7 +437,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &487453772
 GameObject:
@@ -469,7 +469,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &487453775
 MonoBehaviour:
@@ -1478,6 +1478,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI
       objectReference: {fileID: 0}
+    - target: {fileID: 947548714328103934, guid: 1833cd9671649f9489089a63f4544dee,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2108216970114601865, guid: 1833cd9671649f9489089a63f4544dee,
         type: 3}
       propertyPath: viewIdField
@@ -1496,7 +1501,7 @@ PrefabInstance:
     - target: {fileID: 4263722230757479218, guid: 1833cd9671649f9489089a63f4544dee,
         type: 3}
       propertyPath: m_RootOrder
-      value: 8
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4263722230757479218, guid: 1833cd9671649f9489089a63f4544dee,
         type: 3}
@@ -1631,7 +1636,7 @@ PrefabInstance:
     - target: {fileID: 5985980960993625817, guid: 1833cd9671649f9489089a63f4544dee,
         type: 3}
       propertyPath: roundDuration
-      value: 900
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1833cd9671649f9489089a63f4544dee, type: 3}

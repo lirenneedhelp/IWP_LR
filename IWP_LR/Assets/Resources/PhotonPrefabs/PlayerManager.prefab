@@ -68,4 +68,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PV: {fileID: 0}
+  deathCam: {fileID: 5646453494421712913, guid: 2b9d5b14929e8d14fa25e8ac6a7e6e4a,
+    type: 3}
   isTagger: 0
+  isAlive: 1

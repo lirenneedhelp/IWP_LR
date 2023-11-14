@@ -11,15 +11,17 @@ using UnityEngine.SceneManagement;
 public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 {
 	public PhotonView PV;
-
 	GameObject controller;
+
+	public GameObject deathCam;
 
 	UsernameDisplay username;
 
 	int kills;
 	int deaths;
 
-	public bool isTagger = false; 
+	public bool isTagger = false;
+	public bool isAlive = true;
 
 
 	
@@ -57,14 +59,21 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		username = controller.GetComponentInChildren<UsernameDisplay>();
 	}
 
+	void CreateDeathCam(Vector3 deathPosition)
+	{
+		deathPosition += new Vector3(0, 5f, 0);
+		controller = Instantiate(deathCam, deathPosition, Quaternion.identity);	
+	}
+
 	public void Die()
 	{
 		PhotonNetwork.Destroy(controller);
-		RoomManager.Instance.PhotonDestroy();
 		ToggleMouse.OnCursor();
-		SceneManager.LoadScene(0);
-		// CreateController();
-		PhotonNetwork.LeaveRoom();
+		isTagger = false;
+		isAlive = false;
+		CreateDeathCam(controller.transform.position);
+		//CreateController();
+		//PhotonNetwork.LeaveRoom();
 
 
 		// deaths++;

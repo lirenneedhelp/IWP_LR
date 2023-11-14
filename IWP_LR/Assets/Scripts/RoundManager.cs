@@ -16,16 +16,22 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private float currentRoundTime;
 
+    private float cooldown = 5f; // Cooldown between rounds
+
+    public int roomSize;
+
+    bool loaded = false;
+
     private void Start()
     {
         StartRound();
         UpdatePeopleStatus();
         player = PlayerManager.Find(PhotonNetwork.LocalPlayer);
+        roomSize = PhotonNetwork.PlayerList.Length;
     }
 
     private void Update()
     {
-        
         currentRoundTime -= Time.deltaTime;
 
         // Update round timer for all players
@@ -34,36 +40,48 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         UpdateObjective();
 
         // End the round if the timer reaches 0
-        if (currentRoundTime <= 0f)
+        if (currentRoundTime <= 0f && roomSize > 1)
         {
             EndRound();
         }
-        
+
     }
 
     private void StartRound()
     {
         currentRoundTime = roundDuration;
+        cooldown = 5f;
         // Call RPC to sync round start time with all players
         photonView.RPC(nameof(RPC_StartRound), RpcTarget.All, 0);
     }
 
     private void EndRound()
     {
-        
+
         // Perform end of round logic here
         photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
 
 
-        if (PhotonNetwork.PlayerList.Length > 1)
+        if (roomSize > 1)
         {
-            // Start a new round
-            StartRound();
+            if (cooldown < 0)
+            {
+                // Start a new round
+                StartRound();
+            }
+            else
+            {
+                cooldown -= Time.deltaTime;
+            }
         }
         else
         {
-            // Win Lobby
-            //PhotonNetwork.LoadLevel(2);
+            if (!loaded)
+            {
+                // Win Lobby
+                //PhotonNetwork.LeaveRoom();
+                loaded = true;
+            }
         }
     }
 
@@ -81,8 +99,17 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     private void RPC_EndRound()
     {
         if (player.isTagger)
+        {
             player.Die();
+            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All);
+        }
     }
+    [PunRPC]
+    private void RPC_UpdatePlayerCount()
+    {
+        roomSize--;
+    }
+
     private void UpdateRoundTimer(float time)
     {
         // Calculate minutes and seconds from the remaining time
@@ -95,7 +122,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void UpdatePeopleStatus()
     {
-        alive_Text.text = "Alive: " + PhotonNetwork.PlayerList.Length;
+        alive_Text.text = "Alive: " + roomSize;
     }
 
     private void UpdateObjective()
@@ -125,5 +152,13 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             // This is a remote client; receive the round time and update it
             currentRoundTime = (float)stream.ReceiveNext();
         }
+    }
+
+    public override void OnLeftRoom()
+    {
+        if (roomSize <= 1)
+            PhotonNetwork.LoadLevel(2);
+        roomSize--;
+
     }
 }

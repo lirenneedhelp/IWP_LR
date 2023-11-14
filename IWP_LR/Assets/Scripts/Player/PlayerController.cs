@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	public Animator animator;
 
+
 	void Awake()
 	{
 		rb = GetComponent<Rigidbody>();
