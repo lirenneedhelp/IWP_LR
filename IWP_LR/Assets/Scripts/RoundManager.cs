@@ -27,7 +27,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         StartRound();
         UpdatePeopleStatus();
         player = PlayerManager.Find(PhotonNetwork.LocalPlayer);
-        roomSize = PhotonNetwork.PlayerList.Length;
+        roomSize = TagManager.Instance.existingPlayerList.Count;
     }
 
     private void Update()
@@ -79,7 +79,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             if (!loaded)
             {
                 // Win Lobby
-                //PhotonNetwork.LeaveRoom();
+                PhotonNetwork.LeaveRoom();
                 loaded = true;
             }
         }
@@ -101,13 +101,19 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         if (player.isTagger)
         {
             player.Die();
-            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All);
+            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, player.PV.Owner);
         }
     }
     [PunRPC]
-    private void RPC_UpdatePlayerCount()
+    private void RPC_UpdatePlayerCount(Player player)
     {
-        roomSize--;
+        TagManager.Instance.existingPlayerList.Remove(player);
+        roomSize = TagManager.Instance.existingPlayerList.Count;
+    }
+    [PunRPC]
+    private void RPC_EndGame()
+    {
+        PhotonNetwork.LeaveRoom();
     }
 
     private void UpdateRoundTimer(float time)
@@ -154,11 +160,13 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    public override void OnLeftRoom()
+    public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+
         if (roomSize <= 1)
             PhotonNetwork.LoadLevel(2);
-        roomSize--;
+
+        photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, otherPlayer);
 
     }
 }
