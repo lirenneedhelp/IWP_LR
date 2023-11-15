@@ -22,6 +22,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     bool loaded = false;
 
+    bool isStarted = false;
+
     private void Start()
     {
         StartRound();
@@ -32,7 +34,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Update()
     {
-        currentRoundTime -= Time.deltaTime;
+        if (isStarted)
+            currentRoundTime -= Time.deltaTime;
 
         // Update round timer for all players
         UpdateRoundTimer(currentRoundTime);
@@ -40,7 +43,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         UpdateObjective();
 
         // End the round if the timer reaches 0
-        if (currentRoundTime <= 0f && roomSize > 1)
+        if (currentRoundTime < 0f || roomSize <= 1)
         {
             EndRound();
         }
@@ -57,13 +60,14 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void EndRound()
     {
+        isStarted = false;
+        currentRoundTime = 0;
 
         // Perform end of round logic here
-        photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
-
-
         if (roomSize > 1)
         {
+            photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
+
             if (cooldown < 0)
             {
                 // Start a new round
@@ -79,43 +83,54 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             if (!loaded)
             {
                 // Win Lobby
-                PhotonNetwork.LeaveRoom();
+                //if (PhotonNetwork.IsMasterClient)
+                    //photonView.RPC(nameof(RPC_EndGame), RpcTarget.All);
+
                 loaded = true;
             }
         }
     }
 
-    [PunRPC]
-    private void RPC_StartRound(int randomSeed)
-    {
-        if (PhotonNetwork.IsMasterClient)
+    #region RPC_FUNCTIONS
+
+        [PunRPC]
+        private void RPC_StartRound(int randomSeed)
         {
-            TagManager.GenerateTagger(randomSeed);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                TagManager.GenerateTagger(randomSeed);
+            }
+
+            isStarted = true;
+            Debug.Log("Round Started!");
+        }
+        // Kill Off Tagger
+        [PunRPC]
+        private void RPC_EndRound()
+        {
+            if (player.isTagger)
+            {
+                player.Die();
+                photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, player.PV.Owner);
+            }
+        }
+        // REMOVES Tagger from the list and updates the display
+        [PunRPC]
+        private void RPC_UpdatePlayerCount(Player player)
+        {
+            TagManager.Instance.existingPlayerList.Remove(player);
+            roomSize = TagManager.Instance.existingPlayerList.Count;
+        }
+        // End Game
+        [PunRPC]
+        private void RPC_EndGame()
+        {
+            PhotonNetwork.LeaveRoom();
         }
 
-        Debug.Log("Round Started!");
-    }
-    [PunRPC]
-    private void RPC_EndRound()
-    {
-        if (player.isTagger)
-        {
-            player.Die();
-            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, player.PV.Owner);
-        }
-    }
-    [PunRPC]
-    private void RPC_UpdatePlayerCount(Player player)
-    {
-        TagManager.Instance.existingPlayerList.Remove(player);
-        roomSize = TagManager.Instance.existingPlayerList.Count;
-    }
-    [PunRPC]
-    private void RPC_EndGame()
-    {
-        PhotonNetwork.LeaveRoom();
-    }
+    #endregion
 
+    #region Update Display
     private void UpdateRoundTimer(float time)
     {
         // Calculate minutes and seconds from the remaining time
@@ -144,6 +159,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             goal_Text.color = Color.green;
         }
     }
+    #endregion
 
     // Implement IPunObservable interface methods for manual synchronization
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -162,11 +178,10 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
+        photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, otherPlayer);
 
         if (roomSize <= 1)
             PhotonNetwork.LoadLevel(2);
-
-        photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, otherPlayer);
 
     }
 }

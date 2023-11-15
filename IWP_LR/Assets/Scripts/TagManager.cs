@@ -22,7 +22,7 @@ public class TagManager : MonoBehaviour
     public static void GenerateTagger(int randomSeed)
     {
         Random.InitState(randomSeed);
-        List<Player> players = TagManager.Instance.existingPlayerList;
+        List<Player> players = Instance.existingPlayerList;
 
         int randomTaggerIndex = Random.Range(0, players.Count);
         Hashtable customRoomProperties = new ();
