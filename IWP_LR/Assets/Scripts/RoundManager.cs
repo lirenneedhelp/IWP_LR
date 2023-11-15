@@ -24,6 +24,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     bool isStarted = false;
 
+    bool haveTagger = false;
+
     private void Start()
     {
         StartRound();
@@ -127,6 +129,14 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             PhotonNetwork.LeaveRoom();
         }
+        [PunRPC]
+        private void RPC_CheckForExistingTaggers()
+        {
+            foreach (Player p in TagManager.Instance.existingPlayerList)
+            {
+
+            }
+        }
 
     #endregion
 
@@ -178,7 +188,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
-        photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, otherPlayer);
+        if (PhotonNetwork.IsMasterClient)
+            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, otherPlayer);
 
         if (roomSize <= 1)
             PhotonNetwork.LoadLevel(2);
