@@ -29,7 +29,7 @@ public class TagManager : MonoBehaviour
         customRoomProperties["Tagger"] = randomTaggerIndex;
         PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
         
-        Debug.Log(randomTaggerIndex);
+        Debug.LogError(randomTaggerIndex);
 
     }
 

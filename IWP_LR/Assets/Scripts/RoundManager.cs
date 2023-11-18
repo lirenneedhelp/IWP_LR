@@ -24,61 +24,64 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     bool isStarted = false;
 
-    bool haveTagger = false;
 
     private void Start()
     {
-        StartRound();
-        UpdatePeopleStatus();
         player = PlayerManager.Find(PhotonNetwork.LocalPlayer);
         roomSize = TagManager.Instance.existingPlayerList.Count;
+
+        StartRound();
+        UpdatePeopleStatus();
+
     }
 
     private void Update()
     {
         if (isStarted)
-            currentRoundTime -= Time.deltaTime;
-
-        // Update round timer for all players
-        UpdateRoundTimer(currentRoundTime);
-        UpdatePeopleStatus();
-        UpdateObjective();
-
-        // End the round if the timer reaches 0
-        if (currentRoundTime < 0f || roomSize <= 1)
         {
-            EndRound();
+            currentRoundTime -= Time.deltaTime;
+            // Update round timer for all players
+            UpdateRoundTimer(currentRoundTime);
+            UpdatePeopleStatus();
+            UpdateObjective();
+
+            if (currentRoundTime <= 0f)
+                EndRound();
         }
 
     }
 
     private void StartRound()
     {
+        isStarted = true;
         currentRoundTime = roundDuration;
         cooldown = 5f;
+
         // Call RPC to sync round start time with all players
-        photonView.RPC(nameof(RPC_StartRound), RpcTarget.All, 0);
+        photonView.RPC(nameof(RPC_StartRound), RpcTarget.AllBuffered, 0);
     }
 
     private void EndRound()
     {
         isStarted = false;
-        currentRoundTime = 0;
 
         // Perform end of round logic here
         if (roomSize > 1)
         {
-            photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
-
-            if (cooldown < 0)
+            if (PhotonNetwork.IsMasterClient)
+            // ENDS ROUND
             {
-                // Start a new round
-                StartRound();
+                photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
             }
-            else
-            {
-                cooldown -= Time.deltaTime;
-            }
+            //if (cooldown < 0)
+            //{
+            //    // Start a new round
+            //    StartRound();
+            //}
+            //else
+            //{
+            //    cooldown -= Time.deltaTime;
+            //}
         }
         else
         {
@@ -100,8 +103,11 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             if (PhotonNetwork.IsMasterClient)
             {
+                Debug.LogError("Generating new taggers for new round");
                 TagManager.GenerateTagger(randomSeed);
             }
+            player.UpdateTaggers();
+
 
             isStarted = true;
             Debug.Log("Round Started!");
@@ -115,9 +121,11 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
                 player.Die();
                 photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, player.PV.Owner);
             }
+
+            StartRound();
         }
-        // REMOVES Tagger from the list and updates the display
-        [PunRPC]
+    // REMOVES Tagger from the list and updates the display
+    [PunRPC]
         private void RPC_UpdatePlayerCount(Player player)
         {
             TagManager.Instance.existingPlayerList.Remove(player);
@@ -127,15 +135,19 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         [PunRPC]
         private void RPC_EndGame()
         {
-            PhotonNetwork.LeaveRoom();
+            PhotonNetwork.LoadLevel(2);
         }
         [PunRPC]
         private void RPC_CheckForExistingTaggers()
         {
             foreach (Player p in TagManager.Instance.existingPlayerList)
             {
-
+                if (PlayerManager.Find(p).isTagger)
+                {
+                    return;
+                }
             }
+            EndRound();
         }
 
     #endregion
@@ -178,21 +190,23 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             // This is the master client; send the current round time to others
             stream.SendNext(currentRoundTime);
+            //stream.SendNext(TagManager.Instance.tagger);
         }
         else
         {
             // This is a remote client; receive the round time and update it
             currentRoundTime = (float)stream.ReceiveNext();
+            //TagManager.Instance.tagger = (Player)stream.ReceiveNext();
         }
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         if (PhotonNetwork.IsMasterClient)
+        {
             photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, otherPlayer);
-
-        if (roomSize <= 1)
-            PhotonNetwork.LoadLevel(2);
+            photonView.RPC(nameof(RPC_CheckForExistingTaggers), RpcTarget.All);
+        }
 
     }
 }

@@ -36,20 +36,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		if(PV.IsMine)
 		{
 			CreateController();
-		}
-
-		if (PhotonNetwork.IsMasterClient)
-		{	
-			// Get all players in the room
-			Photon.Realtime.Player[] players = PhotonNetwork.PlayerList;
-
-			// Retrieve the value of the "Tagger" property
-    		int taggerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["Tagger"];
-			TagManager.Instance.tagger = players[taggerIndex];
-
-			PV.RPC(nameof(RPC_NewTagger), RpcTarget.All, TagManager.Instance.tagger);	
-		}
-		
+		}		
 	}
 
 	void CreateController()
@@ -88,6 +75,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		PV.RPC(nameof(RPC_GetKill), PV.Owner);
 	}
 
+	public void UpdateTaggers()
+    {	
+		int taggerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["Tagger"];
+		TagManager.Instance.tagger = TagManager.Instance.existingPlayerList[taggerIndex];
+		PV.RPC(nameof(RPC_NewTagger), PV.Owner, taggerIndex);	
+	}		
+
 
 	#region RPC_FUNCTIONS
 	[PunRPC]
@@ -95,7 +89,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 	{
 		kills++;
 
-		Hashtable hash = new Hashtable();
+		Hashtable hash = new ();
 		hash.Add("kills", kills);
 		PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
 	}
@@ -118,16 +112,16 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 	}
 
 	[PunRPC]
-    void RPC_NewTagger(Photon.Realtime.Player tagger)
+    void RPC_NewTagger(int taggerIndex)
     {
-		//Debug.LogError("Owner:" + PV.Owner);
-		//Debug.LogError("The Tagger is" + tagger);		
-        isTagger = PV.Owner == tagger;
-		// Implement logic based on the 'isTagger' variable if needed
-        // For example, change player's appearance or behavior based on whether they are a tagger or not
-		//username.text.color = isTagger ? Color.red : Color.green;
-		
-    }
+		//Debug.LogError("Owner:" + PhotonNetwork.LocalPlayer);
+		//Debug.LogError("The Tagger is" + p);
+
+		// TAGGER
+		Player p = TagManager.Instance.existingPlayerList[taggerIndex];
+		Debug.Log("Tagger Name:" + p.NickName + ". Player Name:" + PV.Owner.NickName + ".");
+		isTagger = p == PV.Owner;
+	}
 
 	#endregion
 

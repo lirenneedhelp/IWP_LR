@@ -11,10 +11,6 @@ public class WinManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        PhotonNetwork.CreateRoom("WinnerRoom");
-    }
-    public override void OnJoinedRoom()
-    {
         PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerManager"), Vector3.zero, Quaternion.identity);
     }
 
