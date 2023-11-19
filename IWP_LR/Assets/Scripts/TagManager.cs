@@ -4,6 +4,8 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using System.Linq;
+
 
 
 public class TagManager : MonoBehaviour
@@ -16,7 +18,7 @@ public class TagManager : MonoBehaviour
     void Awake()
     {
         Instance = this;
-        existingPlayerList = new List<Player>(PhotonNetwork.PlayerList);
+        existingPlayerList = PhotonNetwork.PlayerList.OrderBy(player => player.NickName).ToList();
     }
 
     public static void GenerateTagger(int randomSeed)

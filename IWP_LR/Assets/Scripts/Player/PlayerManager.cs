@@ -78,8 +78,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 	public void UpdateTaggers()
     {	
 		int taggerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["Tagger"];
-		TagManager.Instance.tagger = TagManager.Instance.existingPlayerList[taggerIndex];
-		PV.RPC(nameof(RPC_NewTagger), PV.Owner, taggerIndex);	
+		PV.RPC(nameof(RPC_NewTagger), RpcTarget.All, taggerIndex);	
 	}		
 
 
@@ -115,12 +114,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     void RPC_NewTagger(int taggerIndex)
     {
 		//Debug.LogError("Owner:" + PhotonNetwork.LocalPlayer);
-		//Debug.LogError("The Tagger is" + p);
-
 		// TAGGER
-		Player p = TagManager.Instance.existingPlayerList[taggerIndex];
-		Debug.Log("Tagger Name:" + p.NickName + ". Player Name:" + PV.Owner.NickName + ".");
-		isTagger = p == PV.Owner;
+		TagManager.Instance.tagger = TagManager.Instance.existingPlayerList[taggerIndex];
+		//Debug.LogError("The Tagger is " + TagManager.Instance.tagger);
+		PlayerManager.Find(TagManager.Instance.tagger).isTagger = true;
+		//Debug.Log("Tagger Name:" + p.NickName + ". Player Name:" + PV.Owner.NickName + ".");
+
 	}
 
 	#endregion
@@ -131,11 +130,14 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             // Sending data to others
             stream.SendNext(username.text.color);
-        }
+			stream.SendNext(TagManager.Instance.tagger);
+
+		}
         else
         {
             // Receiving data from others
             username.text.color = (Color)stream.ReceiveNext();
-        }
+			TagManager.Instance.tagger = (Player)stream.ReceiveNext();
+		}
     }
 }

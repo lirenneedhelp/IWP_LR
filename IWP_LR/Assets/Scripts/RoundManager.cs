@@ -24,6 +24,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     bool isStarted = false;
 
+    bool startCountDown = false;
+
 
     private void Start()
     {
@@ -48,17 +50,28 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             if (currentRoundTime <= 0f)
                 EndRound();
         }
+        else
+        {
+            if (startCountDown)
+            {
+                if (cooldown < 0)
+                {
+                    // Start a new round
+                    StartRound();
+                }
+                else
+                {
+                    cooldown -= Time.deltaTime;
+                }
+            }
+        }
 
     }
 
     private void StartRound()
     {
-        isStarted = true;
-        currentRoundTime = roundDuration;
-        cooldown = 5f;
-
         // Call RPC to sync round start time with all players
-        photonView.RPC(nameof(RPC_StartRound), RpcTarget.AllBuffered, 0);
+        photonView.RPC(nameof(RPC_StartRound), RpcTarget.All, 0);
     }
 
     private void EndRound()
@@ -72,16 +85,9 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             // ENDS ROUND
             {
                 photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
+                //StartRound();
             }
-            //if (cooldown < 0)
-            //{
-            //    // Start a new round
-            //    StartRound();
-            //}
-            //else
-            //{
-            //    cooldown -= Time.deltaTime;
-            //}
+            
         }
         else
         {
@@ -98,57 +104,58 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     #region RPC_FUNCTIONS
 
-        [PunRPC]
-        private void RPC_StartRound(int randomSeed)
+    [PunRPC]
+    private void RPC_StartRound(int randomSeed)
+    {
+        if (PhotonNetwork.IsMasterClient)
         {
-            if (PhotonNetwork.IsMasterClient)
-            {
-                Debug.LogError("Generating new taggers for new round");
-                TagManager.GenerateTagger(randomSeed);
-            }
+            Debug.LogError("Generating new taggers for new round");
+            TagManager.GenerateTagger(randomSeed);
             player.UpdateTaggers();
-
-
-            isStarted = true;
-            Debug.Log("Round Started!");
         }
-        // Kill Off Tagger
-        [PunRPC]
-        private void RPC_EndRound()
+
+        currentRoundTime = roundDuration;
+        cooldown = 5f;
+        isStarted = true;
+        Debug.Log("Round Started!");
+    }
+    // Kill Off Tagger
+    [PunRPC]
+    private void RPC_EndRound()
+    {
+        if (player.isTagger)
         {
-            if (player.isTagger)
-            {
-                player.Die();
-                photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, player.PV.Owner);
-            }
-
-            StartRound();
+            player.Die();
+            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, player.PV.Owner);
         }
+
+        startCountDown = true;
+    }
     // REMOVES Tagger from the list and updates the display
     [PunRPC]
-        private void RPC_UpdatePlayerCount(Player player)
+    private void RPC_UpdatePlayerCount(Player player)
+    {
+        TagManager.Instance.existingPlayerList.Remove(player);
+        roomSize = TagManager.Instance.existingPlayerList.Count;
+    }
+    // End Game
+    [PunRPC]
+    private void RPC_EndGame()
+    {
+        PhotonNetwork.LoadLevel(2);
+    }
+    [PunRPC]
+    private void RPC_CheckForExistingTaggers()
+    {
+        foreach (Player p in TagManager.Instance.existingPlayerList)
         {
-            TagManager.Instance.existingPlayerList.Remove(player);
-            roomSize = TagManager.Instance.existingPlayerList.Count;
-        }
-        // End Game
-        [PunRPC]
-        private void RPC_EndGame()
-        {
-            PhotonNetwork.LoadLevel(2);
-        }
-        [PunRPC]
-        private void RPC_CheckForExistingTaggers()
-        {
-            foreach (Player p in TagManager.Instance.existingPlayerList)
+            if (PlayerManager.Find(p).isTagger)
             {
-                if (PlayerManager.Find(p).isTagger)
-                {
-                    return;
-                }
+                return;
             }
-            EndRound();
         }
+        EndRound();
+    }
 
     #endregion
 
