@@ -108,6 +108,7 @@ MonoBehaviour:
   text: {fileID: 2160763297809987873}
   alive_Text: {fileID: 704683517375415860}
   goal_Text: {fileID: 101971393562501034}
+  roomSize: 0
 --- !u!114 &847835095546712971
 MonoBehaviour:
   m_ObjectHideFlags: 0
