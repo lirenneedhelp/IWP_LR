@@ -155,7 +155,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		animator.SetBool("IsSprinting", IsSprint);
 
 		Vector3 moveDir = new Vector3(x, 0, z).normalized;
-		moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (IsSprint ? sprintSpeed : walkSpeed), ref smoothMoveVelocity, smoothTime);
+		moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (IsSprint ? sprintSpeed : walkSpeed) * speedMultiplier, ref smoothMoveVelocity, smoothTime);
 		
 	}
 
