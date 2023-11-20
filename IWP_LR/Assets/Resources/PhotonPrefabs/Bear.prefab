@@ -1524,8 +1524,10 @@ MonoBehaviour:
   itemInfo: {fileID: 11400000, guid: 80a3c028233cd3347b01d265908e1885, type: 2}
   itemGameObject: {fileID: 8595837738970672296, guid: ea8aa160d11dbfd419c80c90f06b990e,
     type: 3}
-  dartPrefab: {fileID: 0}
+  cam: {fileID: 4482232557347708013}
   shootForce: 10
+  pv: {fileID: 8490664266316701048}
+  camHolder: {fileID: 2525756934920183634}
 --- !u!114 &8490664266316701048
 MonoBehaviour:
   m_ObjectHideFlags: 0
