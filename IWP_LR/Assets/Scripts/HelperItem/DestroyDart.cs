@@ -1,28 +1,60 @@
 using System.Collections;
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 
 public class DestroyDart : MonoBehaviourPun
 {
-    public float destroyDelay = 5f; // Adjust this value to set the delay before destruction
-
-    void Start()
+    void OnCollisionEnter(Collision collision)
     {
         if (photonView.IsMine)
+            return;
+
+        // Check if the collided object is a player
+        PhotonView otherPhotonView = collision.gameObject.GetComponent<PhotonView>();
+        if (otherPhotonView != null && otherPhotonView.IsMine)
         {
-            // Only the PhotonView owner should initiate the destruction
-            StartCoroutine(DestroyAfterDelay());
-        }
+            // Store the GameObject and PhotonViewID before destroying the dart
+            int targetViewID = otherPhotonView.ViewID;
+            GameObject targetObject = otherPhotonView.gameObject;
+
+            // Call RPC on the stored GameObject
+            photonView.RPC(nameof(RPC_ShootDart), RpcTarget.All, targetViewID);
+        }     
+
     }
 
-    IEnumerator DestroyAfterDelay()
+    [PunRPC]
+    void RPC_ShootDart(int viewID)
     {
-        yield return new WaitForSeconds(destroyDelay);
+        PhotonView targetPhotonView = PhotonView.Find(viewID);
 
-        // Destroy the Photon object
-        if (photonView.IsMine)
+        if (targetPhotonView != null)
         {
-            PhotonNetwork.Destroy(gameObject);
+            // Check if the target is the local player
+            if (targetPhotonView.IsMine)
+            {
+                // Handle the impact on the target (e.g., remove a part, trigger an animation)
+                Debug.Log("Dart hit the target!");
+
+                // Get the PlayerController component from the target
+                PlayerController pc = targetPhotonView.gameObject.GetComponent<PlayerController>();
+
+                // Apply debuff using the PlayerController
+                if (pc != null)
+                {
+                    Debug.Log("Applied Debuff");
+                    pc.ApplyDebuff();
+                }
+            }
         }
+
+        // Destroy the dart on the shooter's client after RPC is completed
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PhotonNetwork.Destroy(photonView.gameObject);
+        }
+
     }
+
 }

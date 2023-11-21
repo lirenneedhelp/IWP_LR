@@ -44,6 +44,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	float cacheWalkSpeed, cacheSprintSpeed;
 
+	bool isSlowed = false;
+
 	void Awake()
 	{
 		rb = GetComponent<Rigidbody>();
@@ -280,12 +282,25 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
 		sprintSpeed *= 0.5f;
 		walkSpeed *= 0.5f;
-    }
+		isSlowed = true;
+
+		StartCoroutine(RevertSpeedAfterDelay(5f));
+	}
+
+	private IEnumerator RevertSpeedAfterDelay(float delay)
+	{
+		// Wait for the specified delay
+		yield return new WaitForSeconds(delay);
+
+		// Revert the speed to the original values
+		ClearDebuff();
+	}
 
 	public void ClearDebuff()
     {
 		walkSpeed = cacheWalkSpeed;
 		sprintSpeed = cacheSprintSpeed;
+		isSlowed = false;
     }
 
 }
