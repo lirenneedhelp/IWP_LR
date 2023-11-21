@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	public Animator animator;
 
+	float cacheWalkSpeed, cacheSprintSpeed;
 
 	void Awake()
 	{
@@ -51,6 +52,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 		playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
 		ToggleMouse.OffCursor();
+
+		cacheWalkSpeed = walkSpeed;
+		cacheSprintSpeed = sprintSpeed;
 	}
 
 	void Start()
@@ -146,16 +150,16 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		float x = Input.GetAxisRaw("Horizontal");
 		float z = Input.GetAxisRaw("Vertical");
 
-		float move = x + z;
+		float move = Mathf.Abs(x) + Mathf.Abs(z); 
 		float speedMultiplier = playerManager.isTagger ? taggerSpeedMultiplier : 1f;
 
 		bool IsSprint = Input.GetKey(KeyCode.LeftShift);
 		
-		animator.SetBool("IsWalking", move != 0);
+		animator.SetBool("IsWalking", move > 0);
 		animator.SetBool("IsSprinting", IsSprint);
 
 		Vector3 moveDir = new Vector3(x, 0, z).normalized;
-		moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (IsSprint ? sprintSpeed : walkSpeed) * speedMultiplier, ref smoothMoveVelocity, smoothTime);
+		moveAmount = Vector3.SmoothDamp(moveAmount, (IsSprint ? sprintSpeed : walkSpeed) * speedMultiplier * moveDir, ref smoothMoveVelocity, smoothTime);
 		
 	}
 
@@ -271,5 +275,17 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 			//Debug.LogError(playerManager.isTagger);
 		}
 	}
+
+	public void ApplyDebuff()
+    {
+		sprintSpeed *= 0.5f;
+		walkSpeed *= 0.5f;
+    }
+
+	public void ClearDebuff()
+    {
+		walkSpeed = cacheWalkSpeed;
+		sprintSpeed = cacheSprintSpeed;
+    }
 
 }

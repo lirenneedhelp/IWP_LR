@@ -42,10 +42,17 @@ public class SlownessDart : HelperItem
                 Debug.Log("Dart hit the target!");
 
                 // Apply Slowness Effects
-
+                pv.RPC(nameof(RPC_ShootDart), RpcTarget.All, collision.gameObject);
                 // Destroy the dart
                 PhotonNetwork.Destroy(gameObject);
             }
         }
+    }
+
+    [PunRPC]
+    void RPC_ShootDart(GameObject playerGO)
+    {
+        var pc = playerGO.GetComponent<PlayerController>();
+        pc.ApplyDebuff();
     }
 }
