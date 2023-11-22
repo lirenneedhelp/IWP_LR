@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	[SerializeField] float mouseSensitivity, sprintSpeed, walkSpeed, jumpForce, smoothTime, taggerSpeedMultiplier;
 
-	[SerializeField] Item[] items;
+	public Item[] items;
 
 	int itemIndex;
 	int previousItemIndex = -1;
@@ -124,6 +124,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 			// Reset ticks since last attack
 			ticksSinceLastAttack = 0f;
 			items[itemIndex].Use();
+
+			if (items[itemIndex].itemInfo.itemName != "Fist")
+				items[itemIndex].itemInfo.quantity--;
 		}
 
 		if (Input.GetMouseButtonDown(0))
@@ -180,6 +183,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 			return;
 
 		itemIndex = _index;
+
+		if (items[itemIndex].itemInfo.itemName != "Fist")
+			if (items[itemIndex].itemInfo.quantity == 0)
+				return;
+
 
 		items[itemIndex].itemGameObject.SetActive(true);
 
@@ -278,7 +286,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		}
 	}
 
-	public void ApplyDebuff()
+    public void ApplyDebuff()
     {
 		sprintSpeed *= 0.5f;
 		walkSpeed *= 0.5f;

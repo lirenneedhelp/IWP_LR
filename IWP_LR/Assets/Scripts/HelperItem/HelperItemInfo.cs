@@ -5,9 +5,5 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "TNT/NewItem")]
 public class HelperItemInfo : ItemInfo
 {
-    public void Buff()
-    {
-
-
-    }
+   
 }

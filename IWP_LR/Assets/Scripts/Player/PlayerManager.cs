@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 {
 	public PhotonView PV;
-	GameObject controller;
+	public GameObject controller;
 
 	public GameObject deathCam;
 
@@ -117,7 +117,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		// TAGGER
 		TagManager.Instance.tagger = TagManager.Instance.existingPlayerList[taggerIndex];
 		//Debug.LogError("The Tagger is " + TagManager.Instance.tagger);
-		PlayerManager.Find(TagManager.Instance.tagger).isTagger = true;
+		Find(TagManager.Instance.tagger).isTagger = true;
 		//Debug.Log("Tagger Name:" + p.NickName + ". Player Name:" + PV.Owner.NickName + ".");
 
 	}
