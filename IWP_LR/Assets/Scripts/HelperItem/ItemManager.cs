@@ -16,4 +16,17 @@ public class ItemManager : MonoBehaviour
             Destroy(gameObject);
     }
 
+    public void UpdateInventory(int index, PhotonView pv)
+    {
+        this.pv.RPC(nameof(RPC_UpdateInventory), RpcTarget.All, index, pv.ViewID);
+    }
+    [PunRPC]
+    public void RPC_UpdateInventory(int index, int viewID)
+    {
+        PlayerManager playerManager = PlayerManager.Find(PhotonView.Find(viewID).Owner);
+        playerManager.controller.GetComponent<PlayerController>().items[index].itemInfo.quantity++;
+        //Destroy(gameObject);
+        return;
+    }
+
 }

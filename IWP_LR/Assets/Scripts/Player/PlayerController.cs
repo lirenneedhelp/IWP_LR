@@ -123,10 +123,19 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		{
 			// Reset ticks since last attack
 			ticksSinceLastAttack = 0f;
-			items[itemIndex].Use();
+			Debug.Log(items[itemIndex].itemInfo.quantity);
+			if (items[itemIndex].itemInfo.quantity > 0)
+				items[itemIndex].Use();
+
+			Debug.Log(items[itemIndex].itemInfo.itemName);
 
 			if (items[itemIndex].itemInfo.itemName != "Fist")
-				items[itemIndex].itemInfo.quantity--;
+			{
+				if (items[itemIndex].itemInfo.quantity > 0)
+				{
+					items[itemIndex].itemInfo.quantity--;
+				}
+			}
 		}
 
 		if (Input.GetMouseButtonDown(0))
@@ -184,9 +193,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 		itemIndex = _index;
 
-		if (items[itemIndex].itemInfo.itemName != "Fist")
-			if (items[itemIndex].itemInfo.quantity == 0)
-				return;
+		//if (items[itemIndex].itemInfo.itemName != "Fist")
+		//	if (items[itemIndex].itemInfo.quantity == 0)
+		//		return;
 
 
 		items[itemIndex].itemGameObject.SetActive(true);

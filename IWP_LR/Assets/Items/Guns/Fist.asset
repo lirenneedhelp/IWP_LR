@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: Fist
   m_EditorClassIdentifier: 
   itemName: Fist
-  quantity: 0
+  quantity: 1
   damage: 0

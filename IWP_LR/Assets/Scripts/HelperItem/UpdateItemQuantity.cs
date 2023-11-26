@@ -11,20 +11,8 @@ public class UpdateItemQuantity : MonoBehaviour
         if (otherPhotonView != null && otherPhotonView.IsMine)
         {
             // Call RPC on the stored GameObject
-            UpdateInventory(itemIndex, otherPhotonView);
+            ItemManager.Instance.UpdateInventory(itemIndex, otherPhotonView);
         }
-        
     }
-    public void UpdateInventory(int index, PhotonView pv)
-    {
-        ItemManager.Instance.pv.RPC(nameof(RPC_UpdateInventory), RpcTarget.All, index, pv.ViewID);
-        PhotonNetwork.Destroy(gameObject);
-    }
-    [PunRPC]
-    public void RPC_UpdateInventory(int index, int viewID)
-    {
-        PlayerManager playerManager = PlayerManager.Find(PhotonView.Find(viewID).Owner);
-        playerManager.controller.GetComponent<PlayerController>().items[index].itemInfo.quantity++;
-        return;
-    }
+   
 }
