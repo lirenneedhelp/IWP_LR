@@ -6,4 +6,7 @@ public class ItemInfo : ScriptableObject
 {
 	public string itemName;
 	public int quantity;
+	public Sprite displayImage;
+
+	public bool stackable;
 }

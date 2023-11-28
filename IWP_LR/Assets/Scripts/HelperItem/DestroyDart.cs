@@ -5,18 +5,25 @@ using UnityEngine;
 
 public class DestroyDart : MonoBehaviourPun
 {
+    private Rigidbody rb;
+
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
     void OnCollisionEnter(Collision collision)
     {
+        rb.isKinematic = true;
+
         if (photonView.IsMine)
             return;
-
         // Check if the collided object is a player
         PhotonView otherPhotonView = collision.gameObject.GetComponent<PhotonView>();
         if (otherPhotonView != null && otherPhotonView.IsMine)
         {
             // Store the GameObject and PhotonViewID before destroying the dart
             int targetViewID = otherPhotonView.ViewID;
-            GameObject targetObject = otherPhotonView.gameObject;
 
             // Call RPC on the stored GameObject
             photonView.RPC(nameof(RPC_ShootDart), RpcTarget.All, targetViewID);
@@ -31,6 +38,9 @@ public class DestroyDart : MonoBehaviourPun
 
         if (targetPhotonView != null)
         {
+            GameObject playerObject = targetPhotonView.gameObject;
+            transform.SetParent(playerObject.transform);
+
             // Check if the target is the local player
             if (targetPhotonView.IsMine)
             {
@@ -52,9 +62,15 @@ public class DestroyDart : MonoBehaviourPun
         // Destroy the dart on the shooter's client after RPC is completed
         if (PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.Destroy(photonView.gameObject);
+            StartCoroutine(DelayDartDestruction(10f));
         }
 
+    }
+
+    private IEnumerator DelayDartDestruction(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        PhotonNetwork.Destroy(photonView.gameObject);
     }
 
 }

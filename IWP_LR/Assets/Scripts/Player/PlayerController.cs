@@ -12,10 +12,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	[SerializeField] GameObject ui;
 
 	[SerializeField] GameObject cameraHolder;
+	public Camera cam;
 
 	[SerializeField] float mouseSensitivity, sprintSpeed, walkSpeed, jumpForce, smoothTime, taggerSpeedMultiplier;
 
-	public Item[] items;
+	public InventoryManager inventoryManager;
+
+	[SerializeField] Item fist;
 
 	int itemIndex;
 	int previousItemIndex = -1;
@@ -43,8 +46,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	public Animator animator;
 
 	float cacheWalkSpeed, cacheSprintSpeed;
-
-	bool isSlowed = false;
 
 	void Awake()
 	{
@@ -85,7 +86,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		// Increment ticks since last attack
     	ticksSinceLastAttack += Time.deltaTime;
 
-		for(int i = 0; i < items.Length; i++)
+		for(int i = 0; i < inventoryManager.inventorySlots.Length; i++)
 		{
 			if(Input.GetKeyDown((i + 1).ToString()))
 			{
@@ -96,7 +97,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 		if(Input.GetAxisRaw("Mouse ScrollWheel") > 0f)
 		{
-			if(itemIndex >= items.Length - 1)
+			if(itemIndex >= inventoryManager.inventorySlots.Length - 1)
 			{
 				EquipItem(0);
 			}
@@ -109,7 +110,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		{
 			if(itemIndex <= 0)
 			{
-				EquipItem(items.Length - 1);
+				EquipItem(inventoryManager.inventorySlots.Length - 1);
 			}
 			else
 			{
@@ -123,25 +124,32 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		{
 			// Reset ticks since last attack
 			ticksSinceLastAttack = 0f;
-			Debug.Log(items[itemIndex].itemInfo.quantity);
-			if (items[itemIndex].itemInfo.quantity > 0)
-				items[itemIndex].Use();
 
-			Debug.Log(items[itemIndex].itemInfo.itemName);
-
-			if (items[itemIndex].itemInfo.itemName != "Fist")
+			if (inventoryManager.inventorySlots[itemIndex].item == null)
 			{
-				if (items[itemIndex].itemInfo.quantity > 0)
-				{
-					items[itemIndex].itemInfo.quantity--;
-				}
+				if (Input.GetMouseButtonDown(0))
+					animator.SetTrigger("IsAttack");
+
+				fist.Use();
+				return;
 			}
+
+			//Debug.Log(items[itemIndex].itemInfo.quantity);
+			//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
+			Debug.Log("Using Item");
+			inventoryManager.inventorySlots[itemIndex].item.Use();
+
+			//Debug.Log(items[itemIndex].itemInfo.itemName);
+
+			
+			//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
+			//{
+			//	inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity--;
+			//}
+			
 		}
 
-		if (Input.GetMouseButtonDown(0))
-		{
-			animator.SetTrigger("IsAttack");
-		}
+		
 
 		if(transform.position.y < -10f) // Die if you fall out of the world
 		{
@@ -163,6 +171,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	{
 		float x = Input.GetAxisRaw("Horizontal");
 		float z = Input.GetAxisRaw("Vertical");
+
+		//Debug.Log("Horizontal:" + x + "Vertical:" + z);
 
 		float move = Mathf.Abs(x) + Mathf.Abs(z); 
 		float speedMultiplier = playerManager.isTagger ? taggerSpeedMultiplier : 1f;
@@ -188,6 +198,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	void EquipItem(int _index)
 	{
+		if (inventoryManager.inventorySlots[itemIndex].item == null)
+			return;
 		if(_index == previousItemIndex)
 			return;
 
@@ -198,11 +210,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		//		return;
 
 
-		items[itemIndex].itemGameObject.SetActive(true);
+		//inventoryManager.inventorySlots[itemIndex].item.itemGameObject.SetActive(true);
 
 		if(previousItemIndex != -1)
 		{
-			items[previousItemIndex].itemGameObject.SetActive(false);
+			//inventoryManager.inventorySlots[previousItemIndex].item.itemGameObject.SetActive(false);
 		}
 
 		previousItemIndex = itemIndex;
@@ -299,7 +311,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
 		sprintSpeed *= 0.5f;
 		walkSpeed *= 0.5f;
-		isSlowed = true;
 
 		StartCoroutine(RevertSpeedAfterDelay(5f));
 	}
@@ -317,7 +328,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
 		walkSpeed = cacheWalkSpeed;
 		sprintSpeed = cacheSprintSpeed;
-		isSlowed = false;
     }
 
 }

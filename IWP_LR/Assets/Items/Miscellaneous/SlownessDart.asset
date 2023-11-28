@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: SlownessDart
   m_EditorClassIdentifier: 
   itemName: SlownessDart
+  quantity: 0
+  displayImage: {fileID: -1478121134, guid: 4c2b373004fb91e48891a6e05def9bb9, type: 3}
+  stackable: 1

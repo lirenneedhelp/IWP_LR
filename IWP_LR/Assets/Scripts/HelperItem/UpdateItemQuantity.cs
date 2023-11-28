@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class UpdateItemQuantity : MonoBehaviour
+public class UpdateItemQuantity : MonoBehaviourPun
 {
     public int itemIndex;
     private void OnCollisionEnter(Collision collision)
@@ -12,6 +12,7 @@ public class UpdateItemQuantity : MonoBehaviour
         {
             // Call RPC on the stored GameObject
             ItemManager.Instance.UpdateInventory(itemIndex, otherPhotonView);
+            ItemManager.Instance.pv.RPC("RPC_DestroyItem", RpcTarget.All, photonView.ViewID);
         }
     }
    

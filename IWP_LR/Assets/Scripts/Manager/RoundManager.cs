@@ -2,7 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
-public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
+public class RoundManager : MonoBehaviourPunCallbacks
 {
     public float roundDuration = 300f; // Round duration in seconds (5 minutes in this example)
 
@@ -190,22 +190,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
-    // Implement IPunObservable interface methods for manual synchronization
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            // This is the master client; send the current round time to others
-            stream.SendNext(currentRoundTime);
-            //stream.SendNext(TagManager.Instance.tagger);
-        }
-        else
-        {
-            // This is a remote client; receive the round time and update it
-            currentRoundTime = (float)stream.ReceiveNext();
-            //TagManager.Instance.tagger = (Player)stream.ReceiveNext();
-        }
-    }
+
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {

@@ -20,7 +20,7 @@ public class SpawnManager : MonoBehaviour
 
 	public Transform GetSpawnpoint()
 	{
-		int randomIndex = Random.Range(0, availableSpawnpoints.Count);
+		int randomIndex = 0;
 		Transform selectedSpawnpoint = availableSpawnpoints[randomIndex].transform;
 
 		// Remove the selected spawn point from the availableSpawnpoints list
