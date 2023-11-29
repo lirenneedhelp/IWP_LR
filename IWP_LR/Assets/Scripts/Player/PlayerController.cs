@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	[SerializeField] Item fist;
 
-	int itemIndex;
+	int itemIndex = 0;
 	int previousItemIndex = -1;
 
 	float verticalLookRotation;
@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		{
 			if(itemIndex >= inventoryManager.inventorySlots.Length - 1)
 			{
-				EquipItem(0);
+				EquipItem(0);	
 			}
 			else
 			{
@@ -138,6 +138,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 			//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
 			Debug.Log("Using Item");
 			inventoryManager.inventorySlots[itemIndex].item.Item.Use();
+			inventoryManager.inventorySlots[itemIndex].item.count--;
+			inventoryManager.inventorySlots[itemIndex].item.RefreshCount();
 
 			//Debug.Log(items[itemIndex].itemInfo.itemName);
 
@@ -198,28 +200,28 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	void EquipItem(int _index)
 	{
-		if (inventoryManager.inventorySlots[itemIndex].item == null)
-			return;
+		//if (inventoryManager.inventorySlots[itemIndex].item == null)
+			//return;
 		if(_index == previousItemIndex)
 			return;
 
 		itemIndex = _index;
 
-		//if (items[itemIndex].itemInfo.itemName != "Fist")
-		//	if (items[itemIndex].itemInfo.quantity == 0)
-		//		return;
+		if (previousItemIndex != -1)
+			inventoryManager.inventorySlots[previousItemIndex].Deselect();
 
-
+		inventoryManager.inventorySlots[itemIndex].Selected();
 		//inventoryManager.inventorySlots[itemIndex].item.itemGameObject.SetActive(true);
 
-		if(previousItemIndex != -1)
+		if (previousItemIndex != -1)
 		{
 			//inventoryManager.inventorySlots[previousItemIndex].item.itemGameObject.SetActive(false);
 		}
-
 		previousItemIndex = itemIndex;
 
-		if(PV.IsMine)
+		
+
+		if (PV.IsMine)
 		{
 			Hashtable hash = new Hashtable();
 			hash.Add("itemIndex", itemIndex);
