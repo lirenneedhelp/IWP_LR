@@ -51,7 +51,9 @@ public class ItemManager : MonoBehaviour
 
         if (pc != null)
         {
-            itemPrefabs[index].GetComponent<SlownessDart>().cam = pc.cam;
+            var checkIfDart = itemPrefabs[index].GetComponent<SlownessDart>();
+            if (checkIfDart != null)
+                checkIfDart.cam = pc.cam;
             pc.inventoryManager.AddItem(itemPrefabs[index].GetComponent<ItemType>().item);
         }
     }

@@ -137,7 +137,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 			//Debug.Log(items[itemIndex].itemInfo.quantity);
 			//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
 			Debug.Log("Using Item");
-			inventoryManager.inventorySlots[itemIndex].item.Use();
+			inventoryManager.inventorySlots[itemIndex].item.Item.Use();
 
 			//Debug.Log(items[itemIndex].itemInfo.itemName);
 
