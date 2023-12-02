@@ -22,6 +22,12 @@ public class InventoryItem : MonoBehaviour
 
     public void RefreshCount()
     {
+        if (count < 1)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         countText.text = count.ToString();
         bool textActive = count > 1;
         countText.gameObject.SetActive(textActive);

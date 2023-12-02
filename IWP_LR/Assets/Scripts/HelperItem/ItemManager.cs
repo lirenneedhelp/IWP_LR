@@ -10,6 +10,7 @@ public class ItemManager : MonoBehaviour
     public PhotonView pv;
     public Spawnpoint[] itemSpawnpoints;
     public GameObject[] itemPrefabs;
+    public GameObject[] sceneItems;
 
     private void Awake()
     {

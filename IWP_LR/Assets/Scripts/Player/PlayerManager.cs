@@ -23,8 +23,20 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 	public bool isTagger = false;
 	public bool isAlive = true;
 
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if (stream.IsWriting)
+		{
+			// Write your custom data to the stream
+			stream.SendNext(isTagger);
+		}
+		else
+		{
+			// Read the custom data from the stream
+			isTagger = (bool)stream.ReceiveNext();
+		}
+	}
 
-	
 
 	void Awake()
 	{
@@ -79,7 +91,14 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {	
 		int taggerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["Tagger"];
 		PV.RPC(nameof(RPC_NewTagger), RpcTarget.All, taggerIndex);	
-	}		
+	}
+
+	public void SwapTagger(bool state)
+	{
+		//Debug.LogError(PV.Owner);
+		isTagger = state;
+		//PV.RPC(nameof(RPC_LocalTagger), RpcTarget.All, state);
+	}
 
 
 	#region RPC_FUNCTIONS
@@ -91,23 +110,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		Hashtable hash = new ();
 		hash.Add("kills", kills);
 		PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
-	}
-
-	public void SwapTagger(bool state)
-	{
-		//Debug.LogError(PV.Owner);
-		PV.RPC(nameof(RPC_LocalTagger), RpcTarget.All, state);
-	}
-
-	[PunRPC]
-	void RPC_LocalTagger(bool state)
-	{
-		isTagger = state;
-	}
-
-	public static PlayerManager Find(Player player)
-	{
-		return FindObjectsOfType<PlayerManager>().SingleOrDefault(x => x.PV.Owner == player);
 	}
 
 	[PunRPC]
@@ -124,20 +126,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	#endregion
 
-	void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            // Sending data to others
-            stream.SendNext(username.text.color);
-			stream.SendNext(TagManager.Instance.tagger);
+	public static PlayerManager Find(Player player)
+	{
+		return FindObjectsOfType<PlayerManager>().SingleOrDefault(x => x.PV.Owner == player);
+	}
 
-		}
-        else
-        {
-            // Receiving data from others
-            username.text.color = (Color)stream.ReceiveNext();
-			TagManager.Instance.tagger = (Player)stream.ReceiveNext();
-		}
-    }
+
 }

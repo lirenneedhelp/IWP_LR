@@ -255,34 +255,19 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		playerManager.Die();
 	}
 
-	public void ApplyKnockback(Vector3 knockbackDirection)
-    {
-        // Calculate knockback velocity using current velocity and additional knockback force
-        Vector3 knockbackVelocity = knockbackDirection.normalized * knockbackForce;
-		knockbackVelocity.y += 0.5f;
-        PV.RPC("ApplyKnockbackRPC", PV.Owner, knockbackVelocity);
-        
-    }
-
 	public void TakeDamage(float damage, Vector3 dir)
 	{
 		//PV.RPC(nameof(RPC_TakeDamage), PV.Owner, damage);
 		ApplyKnockback(dir);
 		PV.RPC(nameof(RPC_SwapTagger), RpcTarget.All);
 	}
-
-	[PunRPC]
-	void RPC_TakeDamage(float damage, PhotonMessageInfo info)
+	public void ApplyKnockback(Vector3 knockbackDirection)
 	{
-		currentHealth -= damage;
+		// Calculate knockback velocity using current velocity and additional knockback force
+		Vector3 knockbackVelocity = knockbackDirection.normalized * knockbackForce;
+		knockbackVelocity.y += 0.5f;
+		PV.RPC("ApplyKnockbackRPC", PV.Owner, knockbackVelocity);
 
-		healthbarImage.fillAmount = currentHealth / maxHealth;
-
-		if(currentHealth <= 0)
-		{
-			Die();
-			PlayerManager.Find(info.Sender).GetKill();
-		}
 	}
 
 	[PunRPC]
@@ -299,7 +284,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		//Debug.LogError("Sender:" + sender.PV.Owner);
 		//Debug.LogError("Receiver:" + PV.Owner);
 		
-		if (sender.isTagger != playerManager.isTagger && sender.isTagger)
+		if (!playerManager.isTagger && sender.isTagger)
 		{
 			//Debug.Log(info.Sender + " tagged " + PV.Owner);
 			sender.SwapTagger(false);
@@ -308,8 +293,21 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 			//Debug.LogError(playerManager.isTagger);
 		}
 	}
+	//[PunRPC]
+	//void RPC_TakeDamage(float damage, PhotonMessageInfo info)
+	//{
+	//	currentHealth -= damage;
 
-    public void ApplyDebuff()
+	//	healthbarImage.fillAmount = currentHealth / maxHealth;
+
+	//	if(currentHealth <= 0)
+	//	{
+	//		Die();
+	//		PlayerManager.Find(info.Sender).GetKill();
+	//	}
+	//}
+
+	public void ApplyDebuff()
     {
 		sprintSpeed *= 0.5f;
 		walkSpeed *= 0.5f;
