@@ -32,11 +32,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	PhotonView PV;
 
-	const float maxHealth = 100f;
+	//const float maxHealth = 100f;
 
 	const int knockbackForce = 5;
 
-	float currentHealth = maxHealth;
+	//float currentHealth = maxHealth;
 
 	PlayerManager playerManager;
 
@@ -46,6 +46,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	public Animator animator;
 
 	float cacheWalkSpeed, cacheSprintSpeed;
+
+	private Vector3 lastPosition;
+	private float lastTime;
+
+	private Vector3 currentVelocity;
 
 	void Awake()
 	{
@@ -65,6 +70,8 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		if(PV.IsMine)
 		{
 			EquipItem(0);
+			lastPosition = rb.position;
+			lastTime = Time.time;
 		}
 		else
 		{
@@ -127,9 +134,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 			if (inventoryManager.inventorySlots[itemIndex].item == null)
 			{
-				if (Input.GetMouseButtonDown(0))
-					animator.SetTrigger("IsAttack");
-
+				animator.SetTrigger("IsAttack");
 				fist.Use();
 				return;
 			}
@@ -161,7 +166,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	void Look()
 	{
-		transform.Rotate(Vector3.up * Input.GetAxisRaw("Mouse X") * mouseSensitivity);
+		transform.Rotate(Input.GetAxisRaw("Mouse X") * mouseSensitivity * Vector3.up);
 
 		verticalLookRotation += Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
 		verticalLookRotation = Mathf.Clamp(verticalLookRotation, -90f, 90f);
@@ -186,7 +191,18 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 		Vector3 moveDir = new Vector3(x, 0, z).normalized;
 		moveAmount = Vector3.SmoothDamp(moveAmount, (IsSprint ? sprintSpeed : walkSpeed) * speedMultiplier * moveDir, ref smoothMoveVelocity, smoothTime);
-		
+
+		// Calculate displacement and time difference
+		Vector3 displacement = rb.position - lastPosition;
+		float deltaTime = Time.time - lastTime;
+
+		// Calculate velocity
+		currentVelocity = displacement / deltaTime;
+
+		// Update last position and time for the next frame
+		lastPosition = rb.position;
+		lastTime = Time.time;
+
 	}
 
 	void Jump()
@@ -223,7 +239,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 		if (PV.IsMine)
 		{
-			Hashtable hash = new Hashtable();
+			Hashtable hash = new ();
 			hash.Add("itemIndex", itemIndex);
 			PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
 		}
@@ -271,10 +287,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	}
 
 	[PunRPC]
-    private void ApplyKnockbackRPC(Vector3 knockbackVelocity)
+    private void ApplyKnockbackRPC(Vector3 knockbackVelocity, PhotonMessageInfo info)
     {
-        // Apply the received knockback velocity to the rigidbody for remote players
-        rb.velocity = knockbackVelocity;
+		// Apply the received knockback velocity to the rigidbody for remote players
+		var totalKnockBackVelocity = knockbackVelocity + info.photonView.gameObject.GetComponent<PlayerController>().currentVelocity;
+		rb.velocity = totalKnockBackVelocity;
     }
 
 	[PunRPC]

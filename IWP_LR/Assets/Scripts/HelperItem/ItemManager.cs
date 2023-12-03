@@ -3,27 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.IO;
+using System.Linq;
 
-public class ItemManager : MonoBehaviour
+public class ItemManager : MonoBehaviour, IPunObservable
 {
     public static ItemManager Instance = null;
     public PhotonView pv;
     public Spawnpoint[] itemSpawnpoints;
     public GameObject[] itemPrefabs;
-    public GameObject[] sceneItems;
+    private int[] sceneItems;
 
     private void Awake()
     {
         if (Instance == null)
             Instance = this;
-        else
-            Destroy(gameObject);
        // itemSpawnpoints = GetComponentsInChildren<Spawnpoint>();
     }
     private void Start()
     {
+        sceneItems = Enumerable.Repeat(-1, itemSpawnpoints.Length).ToArray();
+
         if (PhotonNetwork.IsMasterClient)
-            SpawnItems();
+            InvokeRepeating(nameof(SpawnItems), 0f, 20f);
     }
 
     public void UpdateInventory(int index, PhotonView pv)
@@ -36,10 +37,14 @@ public class ItemManager : MonoBehaviour
         Debug.Log(itemSpawnpoints.Length);
         for (int i = 0; i < itemSpawnpoints.Length; i++)
         {
-            int randomItemIndex = Random.Range(0, itemPrefabs.Length);
-            //Debug.Log("Spawning Item");
-            //Debug.Log(itemPrefabs[randomItemIndex].name);
-            PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", itemPrefabs[randomItemIndex].name), itemSpawnpoints[i].transform.position, itemSpawnpoints[i].transform.rotation, 0, new object[] { pv.ViewID });
+            if (sceneItems[i] == -1)
+            {
+                int randomItemIndex = Random.Range(0, itemPrefabs.Length);
+                //Debug.Log("Spawning Item");
+                //Debug.Log(itemPrefabs[randomItemIndex].name);
+                GameObject collectibleObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", itemPrefabs[randomItemIndex].name), itemSpawnpoints[i].transform.position, itemSpawnpoints[i].transform.rotation, 0, new object[] { pv.ViewID });
+                sceneItems[i] = collectibleObj.GetComponent<PhotonView>().ViewID;
+            }
         }
 
     }
@@ -77,9 +82,30 @@ public class ItemManager : MonoBehaviour
             Debug.Log($"After Ownership Transfer - IsMine: {itemPV.IsMine}, Owner: {itemPV.Owner}");
 
             // Destroy the object (now the master client should have ownership)
+            for (int i = 0; i < sceneItems.Length; i++)
+            {
+                if (itemPV.ViewID == sceneItems[i])
+                {
+                    sceneItems[i] = -1;
+                    break;
+                }
+            }
+
             PhotonNetwork.Destroy(itemPV.gameObject);
         }
     }
 
-
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // Write your custom data to the stream
+            stream.SendNext(sceneItems);
+        }
+        else
+        {
+            // Read the custom data from the stream
+            sceneItems = (int[])stream.ReceiveNext();
+        }
+    }
 }
