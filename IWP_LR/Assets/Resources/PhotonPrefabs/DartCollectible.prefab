@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 2511996364612563120}
   - component: {fileID: 7984529843551812128}
   - component: {fileID: 2162095707426372256}
-  - component: {fileID: 5218671442905933351}
   - component: {fileID: 2511996364612563121}
   - component: {fileID: 7406163788626414971}
   - component: {fileID: 7961557530395475411}
   - component: {fileID: 1669791275308352672}
+  - component: {fileID: 61792581807421266}
   m_Layer: 0
   m_Name: DartCollectible
   m_TagString: Untagged
@@ -31,8 +31,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4905800223050034822}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.8, y: 57.1715, z: 39.3}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -45,7 +45,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4905800223050034822}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: -7754318969949236687, guid: b1d17873735e61345bd5facd12c92760, type: 3}
 --- !u!23 &2162095707426372256
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 73c176f402d2c2f4d929aa5da7585d17, type: 2}
+  - {fileID: 2100000, guid: 79975f93debae4f44a161e448bea8b77, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -88,19 +88,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &5218671442905933351
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4905800223050034822}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &2511996364612563121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +136,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 1669791275308352672}
+  rotationSpeed: 30
+  moveSpeed: 0.6
+  moveDistance: 0.5
+  heightAboveFloor: 1
+  easeOutFactor: 2
 --- !u!114 &1669791275308352672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -162,7 +154,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemInfo: {fileID: 11400000, guid: 80a3c028233cd3347b01d265908e1885, type: 2}
-  itemGameObject: {fileID: 1868108559678778393, guid: 0eb5487bd6c0e97458fef2765639ee95,
-    type: 3}
+  itemGameObject: {fileID: 4905800223050034822}
   cam: {fileID: 0}
   shootForce: 15
+--- !u!64 &61792581807421266
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4905800223050034822}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -7754318969949236687, guid: b1d17873735e61345bd5facd12c92760, type: 3}

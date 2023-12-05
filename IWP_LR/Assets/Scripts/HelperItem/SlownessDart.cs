@@ -14,8 +14,8 @@ public class SlownessDart : HelperItem
     void ShootDart()
     {
         // Raycast from the camera's crosshair
-        Ray ray = cam.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+    
         Vector3 shootDirection = ray.direction;
         shootDirection.Normalize();
 
@@ -24,7 +24,7 @@ public class SlownessDart : HelperItem
         shootDirection += upwardOffset;
         shootDirection.Normalize(); // Ensure the vector remains a unit vector
 
-        GameObject dart = DartManager.Instance.Instantiate(ray.origin, Quaternion.LookRotation(shootDirection));
+        GameObject dart = DartManager.Instance.InstantiateDart(ray.origin, Quaternion.LookRotation(shootDirection));
         Rigidbody dartRb = dart.GetComponent<Rigidbody>();
 
         if (dartRb != null)

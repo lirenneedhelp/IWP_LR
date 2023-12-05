@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a77f5b2d2feaea49bd8224d62f8e689, type: 3}
   m_Name: SpeedPotion
   m_EditorClassIdentifier: 
-  itemName: 
+  itemName: SpeedPotion
+  displayImage: {fileID: 21300000, guid: 3763ea8928be4724d8e86c7240fa2930, type: 3}
+  stackable: 0

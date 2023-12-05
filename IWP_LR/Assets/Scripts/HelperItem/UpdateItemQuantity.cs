@@ -4,10 +4,10 @@ using Photon.Pun;
 public class UpdateItemQuantity : MonoBehaviourPun
 {
     public int itemIndex;
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider collider)
     {
         // Check if the collided object is a player
-        PhotonView otherPhotonView = collision.gameObject.GetComponent<PhotonView>();
+        PhotonView otherPhotonView = collider.gameObject.GetComponent<PhotonView>();
         if (otherPhotonView != null && otherPhotonView.IsMine)
         {
             // Call RPC on the stored GameObject

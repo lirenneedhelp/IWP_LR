@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	public Animator animator;
 
-	float cacheWalkSpeed, cacheSprintSpeed;
+	float cacheWalkSpeed, cacheSprintSpeed, cacheJumpForce;
 
 	private Vector3 lastPosition;
 	private float lastTime;
@@ -63,6 +63,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 		cacheWalkSpeed = walkSpeed;
 		cacheSprintSpeed = sprintSpeed;
+		cacheJumpForce = jumpForce;
 	}
 
 	void Start()
@@ -341,10 +342,39 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		ClearDebuff();
 	}
 
-	public void ClearDebuff()
+	private void ClearDebuff()
     {
 		walkSpeed = cacheWalkSpeed;
 		sprintSpeed = cacheSprintSpeed;
     }
+
+	public void ApplyJumpBoost(float boost)
+    {
+		jumpForce *= boost;
+
+		StartCoroutine(RevertJumpForceAfterDelay(10f));
+    }
+
+	private IEnumerator RevertJumpForceAfterDelay(float duration)
+    {
+		yield return new WaitForSeconds(duration);
+
+		ClearJumpBuff();
+    }
+
+	private void ClearJumpBuff()
+    {
+		jumpForce = cacheJumpForce;
+    }
+
+	public void ApplySpeed(float speed_boost)
+    {
+		walkSpeed *= speed_boost;
+		sprintSpeed *= speed_boost;
+
+		StartCoroutine(RevertSpeedAfterDelay(10f));
+
+	}
+
 
 }

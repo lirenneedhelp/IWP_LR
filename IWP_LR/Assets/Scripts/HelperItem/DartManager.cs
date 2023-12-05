@@ -21,9 +21,12 @@ public class DartManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    public GameObject Instantiate(Vector3 pos, Quaternion rot)
+    public GameObject InstantiateDart(Vector3 pos, Quaternion rot)
     {
-        GameObject dart = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Dart"), pos, rot);
+        //rot.y += -90;
+        GameObject dart = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "DartFinished"), pos, rot);
+        Vector3 offset = new(0, -90, 0);
+        dart.transform.localEulerAngles += offset;
         // After a delay, destroy the dart across the network
         StartCoroutine(DestroyDartDelayed(dart));
 

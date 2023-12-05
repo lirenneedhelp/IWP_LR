@@ -43,6 +43,11 @@ public class ItemManager : MonoBehaviour, IPunObservable
                 //Debug.Log("Spawning Item");
                 //Debug.Log(itemPrefabs[randomItemIndex].name);
                 GameObject collectibleObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", itemPrefabs[randomItemIndex].name), itemSpawnpoints[i].transform.position, itemSpawnpoints[i].transform.rotation, 0, new object[] { pv.ViewID });
+
+                //GameObject parentObject = new GameObject("ItemSpawnParent");
+                //parentObject.transform.position = itemSpawnpoints[i].transform.position; 
+                //collectibleObj.transform.parent = parentObject.transform;
+
                 sceneItems[i] = collectibleObj.GetComponent<PhotonView>().ViewID;
             }
         }
@@ -60,6 +65,13 @@ public class ItemManager : MonoBehaviour, IPunObservable
             var checkIfDart = itemPrefabs[index].GetComponent<SlownessDart>();
             if (checkIfDart != null)
                 checkIfDart.cam = pc.cam;
+            var checkIfJump = itemPrefabs[index].GetComponent<JumpPotion>();
+            if (checkIfJump)
+                checkIfJump.playerController = pc;
+            var checkIfSpeed = itemPrefabs[index].GetComponent<SpeedPotion>();
+            if (checkIfSpeed)
+                checkIfSpeed.playerController = pc;
+
             pc.inventoryManager.AddItem(itemPrefabs[index].GetComponent<ItemType>().item);
         }
     }
