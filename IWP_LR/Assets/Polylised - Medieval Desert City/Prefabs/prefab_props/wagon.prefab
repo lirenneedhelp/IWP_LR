@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4797983681325758}
   - component: {fileID: 33104533991468552}
   - component: {fileID: 23085997806536964}
+  - component: {fileID: 8925948429347237984}
   m_Layer: 0
   m_Name: wagon
   m_TagString: Untagged
@@ -85,3 +86,16 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &8925948429347237984
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274427780239302}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 5.797977, y: 4.2741656, z: 8.3446045}
+  m_Center: {x: 0.0000037668394, y: 0.0063351006, z: 4.119268}
