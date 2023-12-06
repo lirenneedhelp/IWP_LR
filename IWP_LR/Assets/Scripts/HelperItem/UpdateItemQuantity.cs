@@ -4,6 +4,7 @@ using Photon.Pun;
 public class UpdateItemQuantity : MonoBehaviourPun
 {
     public int itemIndex;
+    [SerializeField] PhotonView pv;
     private void OnTriggerEnter(Collider collider)
     {
         // Check if the collided object is a player
@@ -12,7 +13,7 @@ public class UpdateItemQuantity : MonoBehaviourPun
         {
             // Call RPC on the stored GameObject
             ItemManager.Instance.UpdateInventory(itemIndex, otherPhotonView);
-            ItemManager.Instance.pv.RPC("RPC_DestroyItem", RpcTarget.All, photonView.ViewID);
+            ItemManager.Instance.pv.RPC("RPC_DestroyItem", RpcTarget.All, pv.ViewID);
         }
     }
    

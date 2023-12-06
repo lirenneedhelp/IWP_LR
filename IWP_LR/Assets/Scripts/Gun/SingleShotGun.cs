@@ -9,12 +9,15 @@ public class SingleShotGun : Gun
 
 	float maxRaycastDistance = 5f; // Set your desired maximum raycast distance here
 
+	float particleDuration = 0f;
+
 
 	PhotonView PV;
 
 	void Awake()
 	{
 		PV = GetComponent<PhotonView>();
+		particleDuration = hitEffectParticles.GetComponent<ParticleSystem>().main.duration;
 	}
 
 	public override void Use()
@@ -41,7 +44,11 @@ public class SingleShotGun : Gun
 		if(colliders.Length != 0)
 		{
 			GameObject bulletImpactObj = Instantiate(bulletImpactPrefab, hitPosition + hitNormal * 0.001f, Quaternion.LookRotation(hitNormal, Vector3.up) * bulletImpactPrefab.transform.rotation);
+			GameObject particle = Instantiate(hitEffectParticles , hitPosition + hitNormal * 0.001f, Quaternion.LookRotation(hitNormal, Vector3.up) * hitEffectParticles.transform.rotation);
+
+			Destroy(particle, particleDuration);
 			Destroy(bulletImpactObj, 0.14f);
+
 			bulletImpactObj.transform.SetParent(colliders[0].transform);
 		}
 	}

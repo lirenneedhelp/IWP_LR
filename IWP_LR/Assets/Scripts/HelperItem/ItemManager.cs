@@ -9,15 +9,17 @@ public class ItemManager : MonoBehaviour, IPunObservable
 {
     public static ItemManager Instance = null;
     public PhotonView pv;
-    public Spawnpoint[] itemSpawnpoints;
+    public ItemSpawnpoint[] itemSpawnpoints;
     public GameObject[] itemPrefabs;
     private int[] sceneItems;
 
     private void Awake()
     {
         if (Instance == null)
+        {
             Instance = this;
-       // itemSpawnpoints = GetComponentsInChildren<Spawnpoint>();
+            itemSpawnpoints = GetComponentsInChildren<ItemSpawnpoint>();
+        }
     }
     private void Start()
     {
@@ -49,6 +51,8 @@ public class ItemManager : MonoBehaviour, IPunObservable
                 //collectibleObj.transform.parent = parentObject.transform;
 
                 sceneItems[i] = collectibleObj.GetComponent<PhotonView>().ViewID;
+                itemSpawnpoints[i].waypoint.SetActive(true);
+
             }
         }
 
@@ -99,6 +103,7 @@ public class ItemManager : MonoBehaviour, IPunObservable
                 if (itemPV.ViewID == sceneItems[i])
                 {
                     sceneItems[i] = -1;
+                    itemSpawnpoints[i].waypoint.SetActive(false);
                     break;
                 }
             }
