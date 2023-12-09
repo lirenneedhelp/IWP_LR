@@ -7,7 +7,7 @@ using TMPro;
 public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
 {
     [SerializeField]
-    TMP_Text txt;
+    ChatManager chatManager;
     void Awake()
     {
         PhotonNetwork.AddCallbackTarget(this);
@@ -18,7 +18,7 @@ public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
         PhotonNetwork.RemoveCallbackTarget(this);
     }
 
-    public void OnEvent(ExitGames.Client.Photon.EventData photonEvent)
+    public void OnEvent(EventData photonEvent)
     {
         if (photonEvent.Code == EventManager.TAGGED_EVENT_CODE)
         {
@@ -33,7 +33,13 @@ public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
             // Display an announcement or perform any other relevant actions.
 
             // TO DO: UPDATE PHOTON CHAT
-            txt.text = taggedPV.Owner.NickName + " is 'IT'!"; 
+            Message newMessage = new();
+            newMessage.text = taggedPV.Owner.NickName + " is 'IT'!";
+
+            if (chatManager.messageList.Count >= chatManager.maxMessages)
+                chatManager.messageList.Remove(chatManager.messageList[0]);
+            chatManager.messageList.Add(newMessage);
+            chatManager.UpdateChat();
             Debug.LogError(taggedPV.Owner.NickName + " is 'IT'!");
         }
     }

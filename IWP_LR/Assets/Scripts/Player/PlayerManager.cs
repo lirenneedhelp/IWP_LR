@@ -22,6 +22,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	public bool isTagger = false;
 	public bool isAlive = true;
+	public Vector3 controllerPosition;
 
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
@@ -50,8 +51,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 			CreateController();
 		}		
 	}
+    private void Update()
+    {
+		if (PV.IsMine)
+			controllerPosition = controller.transform.position;
+    }
 
-	void CreateController()
+    void CreateController()
 	{
 		Transform spawnpoint = SpawnManager.Instance.GetSpawnpoint();
 		controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "Bear"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { PV.ViewID });

@@ -9,9 +9,12 @@ public class EventManager : MonoBehaviour
     
     public static void AnnounceTaggedPlayer(int playerID)
     {
-        object[] eventData = new object[] { playerID };
-        RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-        PhotonNetwork.RaiseEvent(TAGGED_EVENT_CODE, eventData, raiseEventOptions, SendOptions.SendReliable);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            object[] eventData = new object[] { playerID };
+            RaiseEventOptions raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
+            PhotonNetwork.RaiseEvent(TAGGED_EVENT_CODE, eventData, raiseEventOptions, SendOptions.SendReliable);
+        }
     }
 
 }

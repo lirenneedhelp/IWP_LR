@@ -5,7 +5,7 @@ using Photon.Pun;
 
 public class TNT : MonoBehaviour
 {
-    private MeshRenderer meshRenderer;
+    [SerializeField] MeshRenderer[] meshRenderer;
 
     [SerializeField] PhotonView playerPV;
 
@@ -14,14 +14,17 @@ public class TNT : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        meshRenderer = GetComponent<MeshRenderer>();
-        meshRenderer.enabled = playerPV.Owner == TagManager.Instance.tagger; 
+        //UpdateVisibility();
         playerManager = PlayerManager.Find(playerPV.Owner);
     }
     void Update()
     {
-        meshRenderer.enabled = playerManager.isTagger; 
+        UpdateVisibility();
     }
 
-
+    void UpdateVisibility()
+    {
+        for (int i = 0; i < meshRenderer.Length; i++)
+            meshRenderer[i].enabled = playerManager.isTagger;
+    }
 }

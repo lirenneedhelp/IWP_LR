@@ -14,11 +14,14 @@ public class TagManager : MonoBehaviour
 
     public List<Player> existingPlayerList;
     public Player tagger;
+    public GameObject[] playerControllers;
+
     // Start is called before the first frame update
     void Awake()
     {
         Instance = this;
         existingPlayerList = PhotonNetwork.PlayerList.OrderBy(player => player.NickName).ToList();
+        playerControllers = GameObject.FindGameObjectsWithTag("Player");
     }
 
     public static void GenerateTagger(int randomSeed)

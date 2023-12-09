@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -5049653817408929360}
   m_Layer: 0
   m_Name: PlayerManager
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -73,3 +73,4 @@ MonoBehaviour:
     type: 3}
   isTagger: 0
   isAlive: 1
+  controllerPosition: {x: 0, y: 0, z: 0}

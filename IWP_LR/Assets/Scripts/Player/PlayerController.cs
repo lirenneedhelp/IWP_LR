@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	//float currentHealth = maxHealth;
 
-	PlayerManager playerManager;
+	public PlayerManager playerManager;
 
 	private float ticksSinceLastAttack = 0f;
 	private float attackCooldown = 0.5f; // Change this to set the desired attack cooldown time
@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		animator = GetComponent<Animator>();
 
 		playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
-		ToggleMouse.OffCursor();
+		//ToggleMouse.OffCursor();
 
 		cacheWalkSpeed = walkSpeed;
 		cacheSprintSpeed = sprintSpeed;

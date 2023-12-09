@@ -2,6 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
+using System.Collections.Generic;
 public class RoundManager : MonoBehaviourPunCallbacks
 {
     public float roundDuration = 300f; // Round duration in seconds (5 minutes in this example)
@@ -125,6 +126,7 @@ public class RoundManager : MonoBehaviourPunCallbacks
     {
         if (player.isTagger)
         {
+            photonView.RPC(nameof(RPC_KillSurroundingPlayers), RpcTarget.All, player.controllerPosition);
             player.Die();
             photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, player.PV.Owner);
         }
@@ -156,7 +158,53 @@ public class RoundManager : MonoBehaviourPunCallbacks
         }
         EndRound();
     }
+    [PunRPC]
+    private void RPC_KillSurroundingPlayers(Vector3 taggerPos)
+    {
+        var playersToRemove = new List<Player>();
 
+        foreach (Player p in TagManager.Instance.existingPlayerList)
+        {
+            var refPM = PlayerManager.Find(p);
+
+            if (refPM == null)
+                continue;
+
+            if (Vector3.Distance(taggerPos, refPM.controllerPosition) < 2f)
+            {
+                if (refPM.isAlive)
+                {
+                    refPM.Die();
+                    playersToRemove.Add(p);
+                    Debug.LogError("Dawg SPLODED!");
+                }
+            }
+        }
+
+        // Remove players outside the foreach loop
+        foreach (Player playerToRemove in playersToRemove)
+        {
+            TagManager.Instance.existingPlayerList.Remove(playerToRemove);
+        }
+    }
+
+    //foreach (GameObject GO in TagManager.Instance.playerControllers)
+    //{
+    //    if (GO == null)
+    //        continue;
+
+    //    var pm = GO.GetComponent<PlayerController>();
+
+    //    if (pm.playerManager != refPM)
+    //        continue;
+
+    //    if (Vector3.Distance(taggerPos, pm.transform.position) < 2f)
+    //    {
+    //        pm.playerManager.Die();
+    //        TagManager.Instance.existingPlayerList.Remove(pm.playerManager.PV.Owner);
+    //        Debug.LogError("Dawg SPLODED!");
+    //    }
+    //}
     #endregion
 
     #region Update Display
@@ -200,5 +248,16 @@ public class RoundManager : MonoBehaviourPunCallbacks
             photonView.RPC(nameof(RPC_CheckForExistingTaggers), RpcTarget.All);
         }
 
+    }
+    private Player FindTagger()
+    {
+        foreach (Player p in TagManager.Instance.existingPlayerList)
+        {
+            if (PlayerManager.Find(p).isTagger)
+            {
+                return p;
+            }
+        }
+        return null;
     }
 }
