@@ -4,31 +4,42 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-	public static SpawnManager Instance;
-	private List<Spawnpoint> availableSpawnpoints = new List<Spawnpoint>();
+    public static SpawnManager Instance;
 
+    private List<Spawnpoint> availableSpawnpoints = new List<Spawnpoint>();
 
-	Spawnpoint[] spawnpoints;
+    void Awake()
+    {
+        Instance = this;
+        PopulateSpawnpointsList();
+    }
 
-	void Awake()
-	{
-		Instance = this;
-		spawnpoints = GetComponentsInChildren<Spawnpoint>();
-		availableSpawnpoints.AddRange(spawnpoints);
+    void PopulateSpawnpointsList()
+    {
+        // Get all Spawnpoint components in the children
+        Spawnpoint[] spawnpoints = GetComponentsInChildren<Spawnpoint>();
 
-	}
+        // Add all spawnpoints to the availableSpawnpoints list
+        availableSpawnpoints.AddRange(spawnpoints);
+    }
 
-	public Transform GetSpawnpoint()
-	{
-		int randomIndex = 0;
-		Transform selectedSpawnpoint = availableSpawnpoints[randomIndex].transform;
+    public Transform GetSpawnpoint()
+    {
+        if (availableSpawnpoints.Count == 0)
+        {
+            // No available spawn points, handle this case (e.g., respawn logic or return null)
+            Debug.LogWarning("No available spawn points!");
+            return null;
+        }
 
-		// Remove the selected spawn point from the availableSpawnpoints list
-		availableSpawnpoints.RemoveAt(randomIndex);
+        // Choose a random spawn point from the availableSpawnpoints list
+        int randomIndex = Random.Range(0, availableSpawnpoints.Count);
+        Spawnpoint selectedSpawnpoint = availableSpawnpoints[randomIndex];
 
-		Debug.Log(randomIndex);
+        // Remove the selected spawn point from the availableSpawnpoints list
+        availableSpawnpoints.RemoveAt(randomIndex);
 
-		return selectedSpawnpoint;
-
-	}
+        // Return the selected spawn point's transform
+        return selectedSpawnpoint.transform;
+    }
 }

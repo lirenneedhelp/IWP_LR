@@ -3,7 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using System.Collections.Generic;
-public class RoundManager : MonoBehaviourPunCallbacks
+public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public float roundDuration = 300f; // Round duration in seconds (5 minutes in this example)
 
@@ -12,6 +12,12 @@ public class RoundManager : MonoBehaviourPunCallbacks
 
     [SerializeField]
     TMP_Text alive_Text, goal_Text;
+
+    [SerializeField]
+    GameObject ExplosionVFX;
+
+    [SerializeField]
+    GameObject popUpDisplay;
 
     PlayerManager player;
 
@@ -27,7 +33,19 @@ public class RoundManager : MonoBehaviourPunCallbacks
 
     bool startCountDown = false;
 
-
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // Write your custom data to the stream
+            stream.SendNext(roomSize);
+        }
+        else
+        {
+            // Read the custom data from the stream
+            roomSize = (int)stream.ReceiveNext();
+        }
+    }
     private void Start()
     {
         player = PlayerManager.Find(PhotonNetwork.LocalPlayer);
@@ -88,7 +106,7 @@ public class RoundManager : MonoBehaviourPunCallbacks
                 photonView.RPC(nameof(RPC_EndRound), RpcTarget.All);
                 //StartRound();
             }
-            
+
         }
         else
         {
@@ -110,10 +128,14 @@ public class RoundManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            Debug.LogError("Generating new taggers for new round");
+           // Debug.LogError("Generating new taggers for new round");
             TagManager.GenerateTagger(randomSeed);
             player.UpdateTaggers();
+
+            
         }
+
+        photonView.RPC(nameof(PopUp), RpcTarget.All);
 
         currentRoundTime = roundDuration;
         cooldown = 5f;
@@ -127,17 +149,18 @@ public class RoundManager : MonoBehaviourPunCallbacks
         if (player.isTagger)
         {
             photonView.RPC(nameof(RPC_KillSurroundingPlayers), RpcTarget.All, player.controllerPosition);
-            player.Die();
-            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, player.PV.Owner);
+            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All);
         }
 
         startCountDown = true;
+
+        if (PhotonNetwork.IsMasterClient)
+            TagManager.Instance.generated = true;
     }
     // REMOVES Tagger from the list and updates the display
     [PunRPC]
-    private void RPC_UpdatePlayerCount(Player player)
+    private void RPC_UpdatePlayerCount()
     {
-        TagManager.Instance.existingPlayerList.Remove(player);
         roomSize = TagManager.Instance.existingPlayerList.Count;
     }
     // End Game
@@ -161,50 +184,37 @@ public class RoundManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_KillSurroundingPlayers(Vector3 taggerPos)
     {
-        var playersToRemove = new List<Player>();
+        Instantiate(ExplosionVFX, taggerPos, Quaternion.identity);
 
-        foreach (Player p in TagManager.Instance.existingPlayerList)
+        GameObject[] playerControllers = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject GO in playerControllers)
         {
-            var refPM = PlayerManager.Find(p);
-
-            if (refPM == null)
+            if (GO == null)
                 continue;
 
-            if (Vector3.Distance(taggerPos, refPM.controllerPosition) < 2f)
+            var pm = GO.GetComponent<PlayerController>();
+
+            if (Vector3.Distance(taggerPos, pm.transform.position) < 2f)
             {
-                if (refPM.isAlive)
+                if (pm.playerManager.isAlive)
                 {
-                    refPM.Die();
-                    playersToRemove.Add(p);
-                    Debug.LogError("Dawg SPLODED!");
+                    pm.playerManager.Die();
                 }
+                TagManager.Instance.existingPlayerList.Remove(pm.playerManager.PV.Owner);
+                Debug.LogError("Dawg SPLODED!");
             }
         }
 
-        // Remove players outside the foreach loop
-        foreach (Player playerToRemove in playersToRemove)
-        {
-            TagManager.Instance.existingPlayerList.Remove(playerToRemove);
-        }
     }
 
-    //foreach (GameObject GO in TagManager.Instance.playerControllers)
-    //{
-    //    if (GO == null)
-    //        continue;
+    [PunRPC]
+    private void PopUp()
+    {
+        if (player.isTagger && player.PV.IsMine)
+            Instantiate(popUpDisplay);
+    }
 
-    //    var pm = GO.GetComponent<PlayerController>();
 
-    //    if (pm.playerManager != refPM)
-    //        continue;
-
-    //    if (Vector3.Distance(taggerPos, pm.transform.position) < 2f)
-    //    {
-    //        pm.playerManager.Die();
-    //        TagManager.Instance.existingPlayerList.Remove(pm.playerManager.PV.Owner);
-    //        Debug.LogError("Dawg SPLODED!");
-    //    }
-    //}
     #endregion
 
     #region Update Display
@@ -230,6 +240,11 @@ public class RoundManager : MonoBehaviourPunCallbacks
             goal_Text.text = "Goal: Hunt em down!";
             goal_Text.color = Color.red;
         }
+        else if (player.isAlive == false)
+        {
+            goal_Text.text = "Goal: Dead!";
+            goal_Text.color = Color.black;
+        }
         else
         {
             goal_Text.text = "Goal: Run Away!";
@@ -244,7 +259,12 @@ public class RoundManager : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
-            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All, otherPlayer);
+            if (TagManager.Instance.existingPlayerList.Contains(otherPlayer))
+            {
+                TagManager.Instance.existingPlayerList.Remove(otherPlayer);
+                roomSize = TagManager.Instance.existingPlayerList.Count;
+            }
+
             photonView.RPC(nameof(RPC_CheckForExistingTaggers), RpcTarget.All);
         }
 

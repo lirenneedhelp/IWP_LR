@@ -24,17 +24,21 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 	public bool isAlive = true;
 	public Vector3 controllerPosition;
 
+
+
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
 		{
 			// Write your custom data to the stream
 			stream.SendNext(isTagger);
+			stream.SendNext(isAlive);
 		}
 		else
 		{
 			// Read the custom data from the stream
 			isTagger = (bool)stream.ReceiveNext();
+			isAlive = (bool)stream.ReceiveNext();
 		}
 	}
 
@@ -53,7 +57,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 	}
     private void Update()
     {
-		if (PV.IsMine)
+		if (PV.IsMine && controller.GetComponent<PhotonView>())
 			controllerPosition = controller.transform.position;
     }
 
@@ -72,11 +76,19 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	public void Die()
 	{
-		PhotonNetwork.Destroy(controller);
-		ToggleMouse.OnCursor();
-		isTagger = false;
-		isAlive = false;
-		CreateDeathCam(controller.transform.position);
+		if (isAlive)
+		{
+			if (controller != null)
+			{
+				Vector3 temp = controller.transform.position;
+
+				PhotonNetwork.Destroy(controller);
+				ToggleMouse.OnCursor();
+				isTagger = false;
+				isAlive = false;
+				CreateDeathCam(temp);
+			}
+		}
 		//CreateController();
 		//PhotonNetwork.LeaveRoom();
 
@@ -94,9 +106,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 	}
 
 	public void UpdateTaggers()
-    {	
-		int taggerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["Tagger"];
-		PV.RPC(nameof(RPC_NewTagger), RpcTarget.All, taggerIndex);	
+    {
+		if (PhotonNetwork.IsMasterClient)
+		{
+			int taggerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["Tagger"];
+			PV.RPC(nameof(RPC_NewTagger), RpcTarget.All, taggerIndex);
+		}
 	}
 
 	public void SwapTagger(bool state)
@@ -123,11 +138,19 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
 		//Debug.LogError("Owner:" + PhotonNetwork.LocalPlayer);
 		// TAGGER
-		TagManager.Instance.tagger = TagManager.Instance.existingPlayerList[taggerIndex];
-		//Debug.LogError("The Tagger is " + TagManager.Instance.tagger);
-		Find(TagManager.Instance.tagger).isTagger = true;
-		//Debug.Log("Tagger Name:" + p.NickName + ". Player Name:" + PV.Owner.NickName + ".");
+		Debug.LogError(taggerIndex);
+		if (taggerIndex < TagManager.Instance.existingPlayerList.Count)
+		{
+			TagManager.Instance.tagger = TagManager.Instance.existingPlayerList[taggerIndex];
+			//Debug.LogError("The Tagger is " + TagManager.Instance.tagger);
+			if (Find(TagManager.Instance.tagger) != null)
+			{
+				Find(TagManager.Instance.tagger).isTagger = true;
+			}
+			//Debug.Log("Tagger Name:" + p.NickName + ". Player Name:" + PV.Owner.NickName + ".");
+		}
 
+		
 	}
 
 	#endregion

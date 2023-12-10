@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 4530.6035, g: 2833.3633, b: 1924.8906, a: 1}
+  m_IndirectSpecularColor: {r: 4529.827, g: 2833.121, b: 1925.3008, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1090,7 +1090,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f17b8aee4361654438903bb716adef5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerControllers: []
+  generated: 0
 --- !u!4 &552480901
 Transform:
   m_ObjectHideFlags: 0
@@ -2723,6 +2723,11 @@ PrefabInstance:
       propertyPath: viewIdField
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2108216970114601865, guid: 1833cd9671649f9489089a63f4544dee,
+        type: 3}
+      propertyPath: ObservedComponents.Array.data[0]
+      value: 
+      objectReference: {fileID: 1942607289}
     - target: {fileID: 2296408040631279450, guid: 1833cd9671649f9489089a63f4544dee,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -3033,6 +3038,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5985980960993625817, guid: 1833cd9671649f9489089a63f4544dee,
+        type: 3}
+      propertyPath: roundDuration
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 7112075322547288988, guid: 1833cd9671649f9489089a63f4544dee,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -3145,6 +3155,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 47f5f871c75ecf346bd96e341a166521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1942607289 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5985980960993625817, guid: 1833cd9671649f9489089a63f4544dee,
+    type: 3}
+  m_PrefabInstance: {fileID: 1942607287}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcfa15e396c7b0a41aa6c97b2dbf6119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2044414254

@@ -14,27 +14,28 @@ public class TagManager : MonoBehaviour
 
     public List<Player> existingPlayerList;
     public Player tagger;
-    public GameObject[] playerControllers;
 
+    public bool generated = false;
     // Start is called before the first frame update
     void Awake()
     {
         Instance = this;
         existingPlayerList = PhotonNetwork.PlayerList.OrderBy(player => player.NickName).ToList();
-        playerControllers = GameObject.FindGameObjectsWithTag("Player");
     }
 
     public static void GenerateTagger(int randomSeed)
     {
-        Random.InitState(randomSeed);
-        List<Player> players = Instance.existingPlayerList;
-
-        int randomTaggerIndex = Random.Range(0, players.Count);
-        Hashtable customRoomProperties = new ();
-        customRoomProperties["Tagger"] = randomTaggerIndex;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
-        
-        Debug.LogError(randomTaggerIndex);
+        if (!Instance.generated)
+        {
+            Random.InitState(randomSeed);
+            List<Player> players = Instance.existingPlayerList;
+            int randomTaggerIndex = Random.Range(0, players.Count);
+            Hashtable customRoomProperties = new();
+            customRoomProperties["Tagger"] = randomTaggerIndex;
+            PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
+            Instance.generated = true;
+        }
+       // Debug.LogError(randomTaggerIndex);
 
     }
 
