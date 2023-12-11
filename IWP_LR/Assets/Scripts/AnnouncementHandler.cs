@@ -8,6 +8,9 @@ public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
 {
     [SerializeField]
     ChatManager chatManager;
+    [SerializeField]
+    GameObject nerfRunnerPopUp;
+
     void Awake()
     {
         PhotonNetwork.AddCallbackTarget(this);
@@ -41,6 +44,15 @@ public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
             chatManager.messageList.Add(newMessage);
             chatManager.UpdateChat();
             Debug.LogError(taggedPV.Owner.NickName + " is 'IT'!");
+        }
+        else if (photonEvent.Code == EventManager.NERF_RUNNERS)
+        {
+            PlayerManager localPlayer = PlayerManager.Find(PhotonNetwork.LocalPlayer);
+            if (!localPlayer.isTagger)
+            {
+                Instantiate(nerfRunnerPopUp);
+                localPlayer.controller.GetComponent<PlayerController>().ApplyDebuff(8f);
+            }
         }
     }
 }

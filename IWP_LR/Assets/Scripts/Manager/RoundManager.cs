@@ -121,6 +121,10 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    private void CallRandomEvent()
+    {
+
+    }
     #region RPC_FUNCTIONS
 
     [PunRPC]
@@ -269,15 +273,5 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         }
 
     }
-    private Player FindTagger()
-    {
-        foreach (Player p in TagManager.Instance.existingPlayerList)
-        {
-            if (PlayerManager.Find(p).isTagger)
-            {
-                return p;
-            }
-        }
-        return null;
-    }
+    
 }

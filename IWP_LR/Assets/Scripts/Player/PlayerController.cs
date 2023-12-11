@@ -325,7 +325,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	//	}
 	//}
 
-	public void ApplyDebuff()
+	public void ApplyDebuff(float debuffDuration)
     {
 		sprintSpeed *= 0.5f;
 		walkSpeed *= 0.5f;

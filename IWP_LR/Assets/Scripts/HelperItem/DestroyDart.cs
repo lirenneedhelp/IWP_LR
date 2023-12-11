@@ -54,7 +54,7 @@ public class DestroyDart : MonoBehaviourPun
                 if (pc != null)
                 {
                     Debug.Log("Applied Debuff");
-                    pc.ApplyDebuff();
+                    pc.ApplyDebuff(5f);
                 }
             }
         }
