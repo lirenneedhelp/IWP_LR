@@ -224,10 +224,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 		itemIndex = _index;
 
-		if (previousItemIndex != -1)
-			inventoryManager.inventorySlots[previousItemIndex].Deselect();
+		if (PV.IsMine)
+		{
+			if (previousItemIndex != -1)
+				inventoryManager.inventorySlots[previousItemIndex].Deselect();
 
-		inventoryManager.inventorySlots[itemIndex].Selected();
+			inventoryManager.inventorySlots[itemIndex].Selected();
+		}
 		//inventoryManager.inventorySlots[itemIndex].item.itemGameObject.SetActive(true);
 
 		if (previousItemIndex != -1)
@@ -330,7 +333,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		sprintSpeed *= 0.5f;
 		walkSpeed *= 0.5f;
 
-		StartCoroutine(RevertSpeedAfterDelay(5f));
+		StartCoroutine(RevertSpeedAfterDelay(debuffDuration));
 	}
 
 	private IEnumerator RevertSpeedAfterDelay(float delay)

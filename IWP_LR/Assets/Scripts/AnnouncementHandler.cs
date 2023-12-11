@@ -9,7 +9,7 @@ public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
     [SerializeField]
     ChatManager chatManager;
     [SerializeField]
-    GameObject nerfRunnerPopUp;
+    GameObject nerfRunnerPopUp, nerfTaggerPopUp;
 
     void Awake()
     {
@@ -48,9 +48,40 @@ public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
         else if (photonEvent.Code == EventManager.NERF_RUNNERS)
         {
             PlayerManager localPlayer = PlayerManager.Find(PhotonNetwork.LocalPlayer);
-            if (!localPlayer.isTagger)
+            Message newMessage = new();
+            newMessage.text = "Runners do be looking slow, dont cha think so :D";
+            newMessage.colourised = true;
+            newMessage.start = Color.red;
+            newMessage.end = Color.black;
+
+            if (chatManager.messageList.Count >= chatManager.maxMessages)
+                chatManager.messageList.Remove(chatManager.messageList[0]);
+            chatManager.messageList.Add(newMessage);
+            chatManager.UpdateChat();
+
+            if (!localPlayer.isTagger && localPlayer.isAlive)
             {
                 Instantiate(nerfRunnerPopUp);
+                localPlayer.controller.GetComponent<PlayerController>().ApplyDebuff(8f);
+            }
+        }
+        else if (photonEvent.Code == EventManager.NERF_TAGGERS)
+        {
+            PlayerManager localPlayer = PlayerManager.Find(PhotonNetwork.LocalPlayer);
+            Message newMessage = new();
+            newMessage.text = "Aye, the taggers may be hitting a roadblock!";
+            newMessage.colourised = true;
+            newMessage.start = Color.blue;
+            newMessage.end = Color.green;
+
+            if (chatManager.messageList.Count >= chatManager.maxMessages)
+                chatManager.messageList.Remove(chatManager.messageList[0]);
+            chatManager.messageList.Add(newMessage);
+            chatManager.UpdateChat();
+
+            if (localPlayer.isTagger && localPlayer.isAlive)
+            {
+                Instantiate(nerfTaggerPopUp);
                 localPlayer.controller.GetComponent<PlayerController>().ApplyDebuff(8f);
             }
         }

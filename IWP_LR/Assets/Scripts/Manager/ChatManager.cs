@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 public class ChatManager : MonoBehaviourPunCallbacks
 {
+    [SerializeField] TMP_FontAsset BoldedFont;
     public TMP_InputField messageInput;
     public GameObject chatText;
     public RectTransform content;
@@ -77,7 +78,16 @@ public class ChatManager : MonoBehaviourPunCallbacks
         {
             GameObject chatTextPrefab = Instantiate(chatText, content);
             TMP_Text chat_text = chatTextPrefab.GetComponent<TMP_Text>();
+            if (messageList[i].colourised)
+            {
+                var temp = chatTextPrefab.AddComponent<TextColourBlink>();
+                temp.speed = 5f;
+                temp.startColour = messageList[i].start;
+                temp.endColour = messageList[i].end;
+                chat_text.font = BoldedFont;
+            }
             chat_text.text = messageList[i].text;
+            
         }
     }
 }
@@ -86,4 +96,7 @@ public class ChatManager : MonoBehaviourPunCallbacks
 public class Message
 {
     public string text;
+    public bool colourised;
+    public Color start;
+    public Color end;
 }

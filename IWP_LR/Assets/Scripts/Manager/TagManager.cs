@@ -23,20 +23,30 @@ public class TagManager : MonoBehaviour
         existingPlayerList = PhotonNetwork.PlayerList.OrderBy(player => player.NickName).ToList();
     }
 
-    public static void GenerateTagger(int randomSeed)
+    public static int GenerateTagger(int randomSeed)
     {
         if (!Instance.generated)
         {
             Random.InitState(randomSeed);
             List<Player> players = Instance.existingPlayerList;
             int randomTaggerIndex = Random.Range(0, players.Count);
-            Hashtable customRoomProperties = new();
-            customRoomProperties["Tagger"] = randomTaggerIndex;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
+            //Debug.LogError(players.Count);
+            //Hashtable customRoomProperties = new();
+            //customRoomProperties["Tagger"] = randomTaggerIndex;
+            //PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
             Instance.generated = true;
+            return randomTaggerIndex;
         }
-       // Debug.LogError(randomTaggerIndex);
 
+        return -1;
+        // Debug.LogError(randomTaggerIndex);
+
+    }
+
+    public static int SeedGenerator()
+    {
+        int seed = (int)System.DateTime.Now.Ticks;
+        return seed;
     }
 
 

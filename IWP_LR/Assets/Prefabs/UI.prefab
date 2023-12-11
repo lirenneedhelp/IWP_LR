@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47f5f871c75ecf346bd96e341a166521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BoldedFont: {fileID: 11400000, guid: 4d7e2ff2b82426544b5744314551362a, type: 2}
   messageInput: {fileID: 3967961860114934596}
   chatText: {fileID: 2366647042999963009, guid: caebe071060d75a4e87cf6b01e8ad06b,
     type: 3}

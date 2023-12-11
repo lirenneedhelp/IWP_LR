@@ -2,7 +2,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
-using System.Collections.Generic;
+using System.Collections;
 public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public float roundDuration = 300f; // Round duration in seconds (5 minutes in this example)
@@ -90,7 +90,11 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     private void StartRound()
     {
         // Call RPC to sync round start time with all players
-        photonView.RPC(nameof(RPC_StartRound), RpcTarget.All, 0);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            int seed = TagManager.SeedGenerator();
+            photonView.RPC(nameof(RPC_StartRound), RpcTarget.All, seed);
+        }
     }
 
     private void EndRound()
@@ -123,6 +127,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void CallRandomEvent()
     {
+        int randomEvent = Random.Range(0, 2);
+        photonView.RPC(nameof(InvokeEvent), RpcTarget.All, randomEvent);
 
     }
     #region RPC_FUNCTIONS
@@ -130,21 +136,22 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     private void RPC_StartRound(int randomSeed)
     {
-        if (PhotonNetwork.IsMasterClient)
-        {
-           // Debug.LogError("Generating new taggers for new round");
-            TagManager.GenerateTagger(randomSeed);
-            player.UpdateTaggers();
-
-            
-        }
-
-        photonView.RPC(nameof(PopUp), RpcTarget.All);
-
         currentRoundTime = roundDuration;
         cooldown = 5f;
         isStarted = true;
-        Debug.Log("Round Started!");
+
+        if (PhotonNetwork.IsMasterClient)
+        {
+           // Debug.LogError("Generating new taggers for new round");
+            //TagManager.GenerateTagger(randomSeed);
+            player.UpdateTaggers(TagManager.GenerateTagger(randomSeed));
+            StartCoroutine(CountdownEvent(currentRoundTime * 0.5f));
+        }
+
+        photonView.RPC(nameof(PopUp), RpcTarget.All);
+        
+
+
     }
     // Kill Off Tagger
     [PunRPC]
@@ -159,7 +166,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         startCountDown = true;
 
         if (PhotonNetwork.IsMasterClient)
-            TagManager.Instance.generated = true;
+            TagManager.Instance.generated = false;
     }
     // REMOVES Tagger from the list and updates the display
     [PunRPC]
@@ -214,10 +221,24 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     private void PopUp()
     {
-        if (player.isTagger && player.PV.IsMine)
+        if (player.isTagger && player.isAlive)
             Instantiate(popUpDisplay);
     }
 
+    [PunRPC]
+
+    private void InvokeEvent(int eventNumber)
+    {
+        switch (eventNumber)
+        {
+            case 0:
+                EventManager.DebuffRunners();
+                break;
+            case 1:
+                EventManager.DebuffTaggers();
+                break;
+        }
+    }
 
     #endregion
 
@@ -272,6 +293,12 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             photonView.RPC(nameof(RPC_CheckForExistingTaggers), RpcTarget.All);
         }
 
+    }
+    private IEnumerator CountdownEvent(float midRoundDuration)
+    {
+        yield return new WaitForSeconds(midRoundDuration);
+
+        CallRandomEvent();
     }
     
 }

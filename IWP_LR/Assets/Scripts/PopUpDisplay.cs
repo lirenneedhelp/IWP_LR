@@ -11,14 +11,20 @@ public class PopUpDisplay : MonoBehaviour
     private TMP_Text popupText;
     private float startTime;
 
+    private void Awake()
+    {
+        // Set the start time
+        startTime = Time.time;
+    }
+
     void Start()
     {
         // Get the Text component
         popupText = GetComponent<TMP_Text>();
+    }
 
-        // Set the start time
-        startTime = Time.time;
-
+    void OnEnable()
+    {
         // Start the coroutine to handle fading
         StartCoroutine(FadeOut());
     }
@@ -28,26 +34,24 @@ public class PopUpDisplay : MonoBehaviour
         // Wait for the display duration
         yield return new WaitForSeconds(displayDuration);
 
-        // Calculate the elapsed time since the start
-        float elapsedTime = Time.time - startTime;
+        float elapsedTime = 0f;
 
-        // Calculate the alpha value based on the elapsed time and fade duration
-        float alpha = 1f - Mathf.Clamp01(elapsedTime / fadeDuration);
-
-        // Set the alpha value of the text
-        Color textColor = popupText.color;
-        textColor.a = alpha;
-        popupText.color = textColor;
-
-        // If the text is still visible, continue fading
-        if (alpha > 0f)
+        while (elapsedTime < fadeDuration)
         {
-            StartCoroutine(FadeOut());
+            yield return null;
+
+            elapsedTime += Time.deltaTime;
+
+            // Calculate the alpha value based on the elapsed time and fade duration
+            float alpha = 1f - Mathf.Clamp01(elapsedTime / fadeDuration);
+
+            // Set the alpha value of the text
+            Color textColor = popupText.color;
+            textColor.a = alpha;
+            popupText.color = textColor;
         }
-        else
-        {
-            // Destroy the GameObject when fading is complete
-            Destroy(gameObject);
-        }
+
+        // Destroy the GameObject when fading is complete
+        Destroy(gameObject);
     }
 }

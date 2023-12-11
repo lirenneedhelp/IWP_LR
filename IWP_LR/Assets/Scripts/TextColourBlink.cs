@@ -4,12 +4,12 @@ public class TextColourBlink : MonoBehaviour
 {
     TMP_Text text;
 
-    [SerializeField] Color startColour;
+    public Color startColour;
 
-    [SerializeField] Color endColour;
+    public Color endColour;
 
     [Range(0, 10)]
-    [SerializeField] float speed;
+    public float speed;
 
     private void Start()
     {

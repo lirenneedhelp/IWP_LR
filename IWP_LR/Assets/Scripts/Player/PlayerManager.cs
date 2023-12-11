@@ -68,7 +68,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		username = controller.GetComponentInChildren<UsernameDisplay>();
 	}
 
-	void CreateDeathCam(Vector3 deathPosition)
+	public void CreateDeathCam(Vector3 deathPosition)
 	{
 		deathPosition += new Vector3(0, 5f, 0);
 		controller = Instantiate(deathCam, deathPosition, Quaternion.identity);	
@@ -88,7 +88,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 				isAlive = false;
 				CreateDeathCam(temp);
 			}
+
 		}
+
+
 		//CreateController();
 		//PhotonNetwork.LeaveRoom();
 
@@ -105,11 +108,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		PV.RPC(nameof(RPC_GetKill), PV.Owner);
 	}
 
-	public void UpdateTaggers()
+	public void UpdateTaggers(int taggerIndex)
     {
 		if (PhotonNetwork.IsMasterClient)
 		{
-			int taggerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["Tagger"];
+			//int taggerIndex = (int)PhotonNetwork.CurrentRoom.CustomProperties["Tagger"];
 			PV.RPC(nameof(RPC_NewTagger), RpcTarget.All, taggerIndex);
 		}
 	}

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 4549.873, g: 2833.4104, b: 1901.9739, a: 1}
+  m_IndirectSpecularColor: {r: 4530.9727, g: 2833.2656, b: 1924.4531, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -664,7 +664,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chatManager: {fileID: 1942607288}
-  nerfRunnerPopUp: {fileID: 0}
+  nerfRunnerPopUp: {fileID: 1600402476206204819, guid: 50ee8469e16931b4fa0ae84d095aabe5,
+    type: 3}
+  nerfTaggerPopUp: {fileID: 8854916006897101073, guid: 4c4a057657b5c2b458d0881b60dd6bc7,
+    type: 3}
 --- !u!4 &510141477 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6696213047104410153, guid: ad70bf74b4dfafe4c9196ce5bb256875,
@@ -2992,7 +2995,7 @@ PrefabInstance:
     - target: {fileID: 5222165195874601145, guid: 1833cd9671649f9489089a63f4544dee,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 599.99963
+      value: 599.2907
       objectReference: {fileID: 0}
     - target: {fileID: 5363484959801809667, guid: 1833cd9671649f9489089a63f4544dee,
         type: 3}

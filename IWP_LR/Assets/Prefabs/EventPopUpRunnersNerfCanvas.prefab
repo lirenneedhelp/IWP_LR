@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1600402475763040665}
   - component: {fileID: 1600402475763040870}
   - component: {fileID: 6195570887337350401}
+  - component: {fileID: 5246401269088697377}
   m_Layer: 0
   m_Name: EventPopUpDisplay
   m_TagString: Untagged
@@ -151,6 +152,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fadeDuration: 2
   displayDuration: 5
+--- !u!114 &5246401269088697377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600402475763040868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77837912f403b20468b28d78d62d5953, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startColour: {r: 0.8584906, g: 0.09313814, b: 0.09313814, a: 1}
+  endColour: {r: 0, g: 0, b: 0, a: 1}
+  speed: 5
 --- !u!1 &1600402476206204819
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,7 +179,7 @@ GameObject:
   - component: {fileID: 1600402476206204821}
   - component: {fileID: 1600402476206204818}
   m_Layer: 0
-  m_Name: EventPopUpCanvas
+  m_Name: EventPopUpRunnersNerfCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
