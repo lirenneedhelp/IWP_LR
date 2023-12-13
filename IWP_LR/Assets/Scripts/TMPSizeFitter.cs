@@ -43,7 +43,7 @@ public class TMPSizeFitter : MonoBehaviour
         if (TextMeshPro == null)
             return;
         m_PreferredHeight = TextMeshPro.preferredHeight;
-        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, m_PreferredHeight);
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, m_PreferredHeight * 1.5f);
     }
 
     private void OnEnable()

@@ -15,7 +15,6 @@ public class TagManager : MonoBehaviour
     public List<Player> existingPlayerList;
     public Player tagger;
 
-    public bool generated = false;
     // Start is called before the first frame update
     void Awake()
     {
@@ -25,20 +24,16 @@ public class TagManager : MonoBehaviour
 
     public static int GenerateTagger(int randomSeed)
     {
-        if (!Instance.generated)
-        {
-            Random.InitState(randomSeed);
-            List<Player> players = Instance.existingPlayerList;
-            int randomTaggerIndex = Random.Range(0, players.Count);
-            //Debug.LogError(players.Count);
-            //Hashtable customRoomProperties = new();
-            //customRoomProperties["Tagger"] = randomTaggerIndex;
-            //PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
-            Instance.generated = true;
-            return randomTaggerIndex;
-        }
+       
+        Random.InitState(randomSeed);
+        List<Player> players = Instance.existingPlayerList;
+        int randomTaggerIndex = Random.Range(0, players.Count);
+        return randomTaggerIndex;
 
-        return -1;
+        //Debug.LogError(players.Count);
+        //Hashtable customRoomProperties = new();
+        //customRoomProperties["Tagger"] = randomTaggerIndex;
+        //PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
         // Debug.LogError(randomTaggerIndex);
 
     }

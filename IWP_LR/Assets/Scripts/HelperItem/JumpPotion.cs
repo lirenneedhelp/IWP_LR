@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-public class JumpPotion : HelperItem
+
+public class JumpPotion : Potion
 {
     [SerializeField] float jump_boost;
     public PlayerController playerController;
@@ -14,5 +13,8 @@ public class JumpPotion : HelperItem
     public override void Use()
     {
         playerController.ApplyJumpBoost(jump_boost);
+        TrailManager.Instance.SpawnTrail(potionEffectTrail.name, playerController.photonView.ViewID, 10f);
     }
+
+
 }

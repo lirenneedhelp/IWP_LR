@@ -90,7 +90,7 @@ public class DelayStartWaitingRoomController : MonoBehaviourPunCallbacks
         PlayerCountUpdate();
         //send master clients countdown timer to all other players in order to sync time.
         if (PhotonNetwork.IsMasterClient)
-            photonView.RPC("RPC_SendTimer",RpcTarget.AllViaServer , timerToStartGame);
+            photonView.RPC(nameof(RPC_SendTimer), RpcTarget.AllViaServer, timerToStartGame);
     }
 
     [PunRPC]

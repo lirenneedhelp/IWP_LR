@@ -73,4 +73,5 @@ MonoBehaviour:
     type: 3}
   isTagger: 0
   isAlive: 1
+  isTyping: 0
   controllerPosition: {x: 0, y: 0, z: 0}

@@ -28,6 +28,7 @@ public class Launcher : MonoBehaviourPunCallbacks
 	void Start()
 	{
 		Debug.Log("Connecting to Master");
+		PhotonNetwork.Disconnect();
 		PhotonNetwork.ConnectUsingSettings();
 	}
 
@@ -85,14 +86,6 @@ public class Launcher : MonoBehaviourPunCallbacks
 		Debug.LogError("Room Creation Failed: " + message);
 		MenuManager.Instance.OpenMenu("error");
 	}
-
-	public override void OnCreatedRoom()
-	{
-		Hashtable customRoomProperties = new ();
-        customRoomProperties.Add("Tagger", 0);
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customRoomProperties);
-	}
-
 	public void StartGame()
 	{
 		PhotonNetwork.LoadLevel(1);

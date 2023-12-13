@@ -131,6 +131,7 @@ MonoBehaviour:
   chatText: {fileID: 2366647042999963009, guid: caebe071060d75a4e87cf6b01e8ad06b,
     type: 3}
   content: {fileID: 5222165195874601145}
+  chatBox: {fileID: 2360397243848733804}
   maxMessages: 25
   messageList: []
 --- !u!114 &2108216970114601865
@@ -189,7 +190,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -249,7 +250,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6676628204121054123
 RectTransform:
   m_ObjectHideFlags: 0
@@ -269,8 +270,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
   m_AnchorMin: {x: 0.18300001, y: 0.252}
   m_AnchorMax: {x: 0.18300001, y: 0.252}
-  m_AnchoredPosition: {x: 0, y: 190}
-  m_SizeDelta: {x: 620, y: 600}
+  m_AnchoredPosition: {x: 103.24182, y: 190}
+  m_SizeDelta: {x: 800, y: 600}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2131472035096566799
 CanvasRenderer:
@@ -1177,7 +1178,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 600}
-  m_SizeDelta: {x: -3, y: 50}
+  m_SizeDelta: {x: -3, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &3214831394099544970
 MonoBehaviour:
@@ -1202,8 +1203,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
-  m_ChildScaleWidth: 1
-  m_ChildScaleHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
   m_ReverseArrangement: 1
 --- !u!114 &3799123940894417782
 MonoBehaviour:
@@ -1722,9 +1723,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -17, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3104165168757207631
 CanvasRenderer:

@@ -7,16 +7,17 @@ using System.IO;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
-	public static RoomManager Instance;
+	public static RoomManager Instance = null;
 
 	void Awake()
 	{
-		// if(Instance)
-		// {
-		// 	Destroy(gameObject);
-		// 	return;
-		// }
-		DontDestroyOnLoad(gameObject);
+        if (Instance)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        DontDestroyOnLoad(gameObject);
 		Instance = this;
 	}
 
@@ -37,11 +38,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 		if(scene.buildIndex == 1 || scene.buildIndex == 2) // We're in the game scene
 		{
 			PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerManager"), Vector3.zero, Quaternion.identity);
+			Destroy(gameObject);
 		}
 	}
 
-	public void PhotonDestroy()
-	{
-		PhotonNetwork.Destroy(photonView);
-	}
 }

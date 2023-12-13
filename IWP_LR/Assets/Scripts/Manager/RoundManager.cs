@@ -62,9 +62,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             currentRoundTime -= Time.deltaTime;
             // Update round timer for all players
-            UpdateRoundTimer(currentRoundTime);
-            UpdatePeopleStatus();
-            UpdateObjective();
+            if (currentRoundTime >= 0)
+                UpdateRoundTimer(currentRoundTime);
 
             if (currentRoundTime <= 0f)
                 EndRound();
@@ -76,7 +75,18 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
                 if (cooldown < 0)
                 {
                     // Start a new round
-                    StartRound();
+                    if (roomSize > 1)
+                        StartRound();
+                    else
+                    {
+                        Debug.Log("Winner Is" + TagManager.Instance.existingPlayerList[0].NickName);
+                        if (!loaded)
+                        {
+                            photonView.RPC(nameof(RPC_EndGame), RpcTarget.All);
+                            loaded = true;
+                        }
+
+                    }
                 }
                 else
                 {
@@ -84,6 +94,9 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
                 }
             }
         }
+
+        UpdatePeopleStatus();
+        UpdateObjective();
 
     }
 
@@ -112,17 +125,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             }
 
         }
-        else
-        {
-            if (!loaded)
-            {
-                // Win Lobby
-                //if (PhotonNetwork.IsMasterClient)
-                    //photonView.RPC(nameof(RPC_EndGame), RpcTarget.All);
-
-                loaded = true;
-            }
-        }
+       
     }
 
     private void CallRandomEvent()
@@ -165,8 +168,6 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
         startCountDown = true;
 
-        if (PhotonNetwork.IsMasterClient)
-            TagManager.Instance.generated = false;
     }
     // REMOVES Tagger from the list and updates the display
     [PunRPC]
@@ -177,8 +178,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     // End Game
     [PunRPC]
     private void RPC_EndGame()
-    {
-        PhotonNetwork.LoadLevel(2);
+    {  
+        PhotonNetwork.LoadLevel(0);
     }
     [PunRPC]
     private void RPC_CheckForExistingTaggers()
@@ -300,5 +301,6 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
         CallRandomEvent();
     }
-    
+
+
 }

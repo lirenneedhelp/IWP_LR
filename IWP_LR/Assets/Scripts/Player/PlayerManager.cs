@@ -22,6 +22,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	public bool isTagger = false;
 	public bool isAlive = true;
+	public bool isTyping = false;
+
 	public Vector3 controllerPosition;
 
 
@@ -33,12 +35,14 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 			// Write your custom data to the stream
 			stream.SendNext(isTagger);
 			stream.SendNext(isAlive);
+			stream.SendNext(isTyping);
 		}
 		else
 		{
 			// Read the custom data from the stream
 			isTagger = (bool)stream.ReceiveNext();
 			isAlive = (bool)stream.ReceiveNext();
+			isTyping = (bool)stream.ReceiveNext();
 		}
 	}
 

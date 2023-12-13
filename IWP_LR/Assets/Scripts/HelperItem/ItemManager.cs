@@ -35,7 +35,7 @@ public class ItemManager : MonoBehaviour, IPunObservable
     }
     public void SpawnItems()
     {
-        Random.InitState(2);
+        //Random.InitState(2);
         //Debug.Log(itemSpawnpoints.Length);
         for (int i = 0; i < itemSpawnpoints.Length; i++)
         {
@@ -44,7 +44,12 @@ public class ItemManager : MonoBehaviour, IPunObservable
                 int randomItemIndex = Random.Range(0, itemPrefabs.Length);
                 //Debug.Log("Spawning Item");
                 //Debug.Log(itemPrefabs[randomItemIndex].name);
-                GameObject collectibleObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", itemPrefabs[randomItemIndex].name), itemSpawnpoints[i].transform.position, itemSpawnpoints[i].transform.rotation, 0, new object[] { pv.ViewID });
+                Vector3 itemPos = itemSpawnpoints[i].transform.position;
+
+                if (itemPrefabs[randomItemIndex].name == "DartParent")
+                    itemPos.x += -3.65f;
+
+                GameObject collectibleObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", itemPrefabs[randomItemIndex].name), itemPos, itemSpawnpoints[i].transform.rotation, 0, new object[] { pv.ViewID });
 
 
                 sceneItems[i] = collectibleObj.GetComponent<PhotonView>().ViewID;

@@ -38,6 +38,7 @@ public class AnnouncementHandler : MonoBehaviour, IOnEventCallback
             // TO DO: UPDATE PHOTON CHAT
             Message newMessage = new();
             newMessage.text = taggedPV.Owner.NickName + " is 'IT'!";
+            newMessage.start = Color.red;
 
             if (chatManager.messageList.Count >= chatManager.maxMessages)
                 chatManager.messageList.Remove(chatManager.messageList[0]);

@@ -87,76 +87,82 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		if(!PV.IsMine)
 			return;
 
-		Look();
-		Move();
-		Jump();
-		
-		// Increment ticks since last attack
-    	ticksSinceLastAttack += Time.deltaTime;
+		if (playerManager.isTyping)
+			moveAmount = Vector3.zero;
 
-		for(int i = 0; i < inventoryManager.inventorySlots.Length; i++)
+		if (playerManager.isTyping == false)
 		{
-			if(Input.GetKeyDown((i + 1).ToString()))
+			Look();
+			Move();
+			Jump();
+
+
+			// Increment ticks since last attack
+			ticksSinceLastAttack += Time.deltaTime;
+
+			for (int i = 0; i < inventoryManager.inventorySlots.Length; i++)
 			{
-				EquipItem(i);
-				break;
+				if (Input.GetKeyDown((i + 1).ToString()))
+				{
+					EquipItem(i);
+					break;
+				}
+			}
+
+			if (Input.GetAxisRaw("Mouse ScrollWheel") > 0f)
+			{
+				if (itemIndex >= inventoryManager.inventorySlots.Length - 1)
+				{
+					EquipItem(0);
+				}
+				else
+				{
+					EquipItem(itemIndex + 1);
+				}
+			}
+			else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0f)
+			{
+				if (itemIndex <= 0)
+				{
+					EquipItem(inventoryManager.inventorySlots.Length - 1);
+				}
+				else
+				{
+					EquipItem(itemIndex - 1);
+				}
+			}
+
+
+			// CODE FOR SHOOTING!
+			if (Input.GetMouseButtonDown(0) && ticksSinceLastAttack >= attackCooldown)
+			{
+				// Reset ticks since last attack
+				ticksSinceLastAttack = 0f;
+
+				if (inventoryManager.inventorySlots[itemIndex].item == null)
+				{
+					animator.SetTrigger("IsAttack");
+					fist.Use();
+					return;
+				}
+
+				//Debug.Log(items[itemIndex].itemInfo.quantity);
+				//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
+				Debug.Log("Using Item");
+				inventoryManager.inventorySlots[itemIndex].item.Item.Use();
+				inventoryManager.inventorySlots[itemIndex].item.count--;
+				inventoryManager.inventorySlots[itemIndex].item.RefreshCount();
+
+				//Debug.Log(items[itemIndex].itemInfo.itemName);
+
+
+				//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
+				//{
+				//	inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity--;
+				//}
+
 			}
 		}
-
-		if(Input.GetAxisRaw("Mouse ScrollWheel") > 0f)
-		{
-			if(itemIndex >= inventoryManager.inventorySlots.Length - 1)
-			{
-				EquipItem(0);	
-			}
-			else
-			{
-				EquipItem(itemIndex + 1);
-			}
-		}
-		else if(Input.GetAxisRaw("Mouse ScrollWheel") < 0f)
-		{
-			if(itemIndex <= 0)
-			{
-				EquipItem(inventoryManager.inventorySlots.Length - 1);
-			}
-			else
-			{
-				EquipItem(itemIndex - 1);
-			}
-		}
-		
-
-		// CODE FOR SHOOTING!
-		if(Input.GetMouseButtonDown(0) && ticksSinceLastAttack >= attackCooldown)
-		{
-			// Reset ticks since last attack
-			ticksSinceLastAttack = 0f;
-
-			if (inventoryManager.inventorySlots[itemIndex].item == null)
-			{
-				animator.SetTrigger("IsAttack");
-				fist.Use();
-				return;
-			}
-
-			//Debug.Log(items[itemIndex].itemInfo.quantity);
-			//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
-			Debug.Log("Using Item");
-			inventoryManager.inventorySlots[itemIndex].item.Item.Use();
-			inventoryManager.inventorySlots[itemIndex].item.count--;
-			inventoryManager.inventorySlots[itemIndex].item.RefreshCount();
-
-			//Debug.Log(items[itemIndex].itemInfo.itemName);
-
-			
-			//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
-			//{
-			//	inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity--;
-			//}
-			
-		}
-
 		
 
 		if(transform.position.y < -10f) // Die if you fall out of the world
@@ -177,6 +183,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
 	void Move()
 	{
+
 		float x = Input.GetAxisRaw("Horizontal");
 		float z = Input.GetAxisRaw("Vertical");
 

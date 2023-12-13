@@ -239,6 +239,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemInfo: {fileID: 11400000, guid: 86151f94bf2600b4eb5a6223d751feb7, type: 2}
   itemGameObject: {fileID: 2353627326166984817}
+  potionEffectTrail: {fileID: 7691314778911883935, guid: 3a9ab7e4a4223f44ca538212d6fe8563,
+    type: 3}
   speed_boost: 1.5
   playerController: {fileID: 0}
 --- !u!114 &7798766314230789216

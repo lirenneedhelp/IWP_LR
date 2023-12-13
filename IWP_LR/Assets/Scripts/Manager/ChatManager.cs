@@ -1,9 +1,8 @@
 using Photon.Pun;
-using Photon.Realtime;
-using UnityEngine.UI;
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using System.Collections;
 
 public class ChatManager : MonoBehaviourPunCallbacks
 {
@@ -11,11 +10,20 @@ public class ChatManager : MonoBehaviourPunCallbacks
     public TMP_InputField messageInput;
     public GameObject chatText;
     public RectTransform content;
+    public GameObject chatBox;
 
-    
+    private Coroutine chatBoxCoroutine;
+
     public int maxMessages = 25;
 
     public List<Message> messageList = new ();
+
+    private PlayerManager localPlayerManager;
+
+    private void Start()
+    {
+        localPlayerManager = PlayerManager.Find(PhotonNetwork.LocalPlayer);
+    }
 
     public void SendMessage()
     {
@@ -44,7 +52,7 @@ public class ChatManager : MonoBehaviourPunCallbacks
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            
+
             if (messageInput.gameObject.activeInHierarchy)
             {
                 SendMessage();
@@ -54,11 +62,17 @@ public class ChatManager : MonoBehaviourPunCallbacks
             else
             {
                 Cursor.lockState = CursorLockMode.None;
+                chatBox.SetActive(false);
             }
 
             messageInput.gameObject.SetActive(!messageInput.gameObject.activeInHierarchy);
             Cursor.visible = messageInput.gameObject.activeInHierarchy;
             messageInput.ActivateInputField();
+            localPlayerManager.isTyping = !localPlayerManager.isTyping;
+
+            if (messageInput.gameObject.activeInHierarchy)
+                chatBox.SetActive(true);
+
 
 
 
@@ -68,6 +82,7 @@ public class ChatManager : MonoBehaviourPunCallbacks
 
     public void UpdateChat()
     {
+        ActivateChatBox();
         // Clear existing chat
         foreach (Transform child in content.transform)
         {
@@ -78,6 +93,7 @@ public class ChatManager : MonoBehaviourPunCallbacks
         {
             GameObject chatTextPrefab = Instantiate(chatText, content);
             TMP_Text chat_text = chatTextPrefab.GetComponent<TMP_Text>();
+
             if (messageList[i].colourised)
             {
                 var temp = chatTextPrefab.AddComponent<TextColourBlink>();
@@ -86,9 +102,36 @@ public class ChatManager : MonoBehaviourPunCallbacks
                 temp.endColour = messageList[i].end;
                 chat_text.font = BoldedFont;
             }
+
+            if (messageList[i].start != null)
+                chat_text.color = messageList[i].start;
+
             chat_text.text = messageList[i].text;
             
         }
+    }
+
+    // Function to activate the chatBox and start the coroutine
+    private void ActivateChatBox()
+    {
+        chatBox.SetActive(true);
+
+        if (chatBoxCoroutine != null)
+        {
+            StopCoroutine(chatBoxCoroutine);
+        }
+
+        // Start the coroutine to deactivate the chatBox after 5 seconds
+        chatBoxCoroutine = StartCoroutine(DeactivateChatBoxAfterDelay(5f));
+    }
+
+    // Coroutine to deactivate the chatBox after a specified delay
+    private IEnumerator DeactivateChatBoxAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        // Deactivate the chatBox after the delay
+        chatBox.SetActive(false);
     }
 }
 
