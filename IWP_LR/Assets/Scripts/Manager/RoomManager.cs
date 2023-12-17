@@ -8,6 +8,7 @@ using System.IO;
 public class RoomManager : MonoBehaviourPunCallbacks
 {
 	public static RoomManager Instance = null;
+	PhotonView PV;
 
 	void Awake()
 	{
@@ -20,8 +21,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
         DontDestroyOnLoad(gameObject);
 		Instance = this;
 	}
+    private void Start()
+    {
+		PV = GetComponent<PhotonView>();
+    }
 
-	public override void OnEnable()
+    public override void OnEnable()
 	{
 		base.OnEnable();
 		SceneManager.sceneLoaded += OnSceneLoaded;
@@ -39,6 +44,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 		{
 			PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerManager"), Vector3.zero, Quaternion.identity);
 			Destroy(gameObject);
+			PhotonNetwork.LocalCleanPhotonView(PV);
 		}
 	}
 

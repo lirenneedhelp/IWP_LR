@@ -33,7 +33,7 @@ public class SingleShotGun : Gun
 		{
 			Vector3 knockbackDirection = (hit.point - transform.position).normalized;
 			hit.collider.gameObject.GetComponent<IDamageable>()?.TakeDamage(((GunInfo)itemInfo).damage, knockbackDirection);
-			PV.RPC(nameof(RPC_Shoot), RpcTarget.All, hit.point, hit.normal);
+			PV.RPC(nameof(RPC_Shoot), RpcTarget.AllViaServer, hit.point, hit.normal);
 		}
 	}
 

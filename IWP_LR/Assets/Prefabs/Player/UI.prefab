@@ -132,7 +132,7 @@ MonoBehaviour:
     type: 3}
   content: {fileID: 5222165195874601145}
   chatBox: {fileID: 2360397243848733804}
-  maxMessages: 25
+  maxMessages: 10
   messageList: []
 --- !u!114 &2108216970114601865
 MonoBehaviour:
@@ -294,7 +294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.050980393}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

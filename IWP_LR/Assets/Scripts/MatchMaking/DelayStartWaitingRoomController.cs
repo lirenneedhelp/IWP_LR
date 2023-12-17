@@ -14,7 +14,7 @@ public class DelayStartWaitingRoomController : MonoBehaviourPunCallbacks
     / in the waiting room scene of your project. */
 
     // photon view for sending rpc that updates the timer
-    private PhotonView photonView;
+    private PhotonView PV;
     
     // scene navigation indexes
     [SerializeField]
@@ -52,7 +52,7 @@ public class DelayStartWaitingRoomController : MonoBehaviourPunCallbacks
     void Start()
     {
         //initialise variables
-        photonView = GetComponent<PhotonView>();
+        PV = GetComponent<PhotonView>();
         fullGameTimer = maxFullGameWaitTime;
         notFullGameTimer = maxWaitTime;
         timerToStartGame = maxWaitTime;

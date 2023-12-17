@@ -26,7 +26,7 @@ public class DestroyDart : MonoBehaviourPun
             int targetViewID = otherPhotonView.ViewID;
 
             // Call RPC on the stored GameObject
-            photonView.RPC(nameof(RPC_ShootDart), RpcTarget.All, targetViewID);
+            photonView.RPC(nameof(RPC_ShootDart), RpcTarget.AllViaServer, targetViewID);
         }     
 
     }

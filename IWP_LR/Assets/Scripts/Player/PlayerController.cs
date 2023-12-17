@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		animator = GetComponent<Animator>();
 
 		playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
-		//ToggleMouse.OffCursor();
+		ToggleMouse.OffCursor();
 
 		cacheWalkSpeed = walkSpeed;
 		cacheSprintSpeed = sprintSpeed;
@@ -138,29 +138,21 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 			{
 				// Reset ticks since last attack
 				ticksSinceLastAttack = 0f;
-
-				if (inventoryManager.inventorySlots[itemIndex].item == null)
+				animator.SetTrigger("IsAttack");
+				fist.Use();
+				return;
+			}
+			else if (Input.GetMouseButtonDown(1))
+            {
+				if (inventoryManager.inventorySlots[itemIndex].item != null)
 				{
-					animator.SetTrigger("IsAttack");
-					fist.Use();
-					return;
+					//Debug.Log(items[itemIndex].itemInfo.quantity);
+					//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
+					Debug.Log("Using Item");
+					inventoryManager.inventorySlots[itemIndex].item.Item.Use();
+					inventoryManager.inventorySlots[itemIndex].item.count--;
+					inventoryManager.inventorySlots[itemIndex].item.RefreshCount();
 				}
-
-				//Debug.Log(items[itemIndex].itemInfo.quantity);
-				//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
-				Debug.Log("Using Item");
-				inventoryManager.inventorySlots[itemIndex].item.Item.Use();
-				inventoryManager.inventorySlots[itemIndex].item.count--;
-				inventoryManager.inventorySlots[itemIndex].item.RefreshCount();
-
-				//Debug.Log(items[itemIndex].itemInfo.itemName);
-
-
-				//if (inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity > 0)
-				//{
-				//	inventoryManager.inventorySlots[itemIndex].item.itemInfo.quantity--;
-				//}
-
 			}
 		}
 		
@@ -286,7 +278,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	{
 		//PV.RPC(nameof(RPC_TakeDamage), PV.Owner, damage);
 		ApplyKnockback(dir);
-		PV.RPC(nameof(RPC_SwapTagger), RpcTarget.All);
+		PV.RPC(nameof(RPC_SwapTagger), RpcTarget.AllViaServer);
 	}
 	public void ApplyKnockback(Vector3 knockbackDirection)
 	{
@@ -315,7 +307,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		if (!playerManager.isTagger && sender.isTagger)
 		{
 			//Debug.Log(info.Sender + " tagged " + PV.Owner);
-			sender.SwapTagger(false);
+			sender.isTagger = false;
 			playerManager.isTagger = true;
 			EventManager.AnnounceTaggedPlayer(PV.ViewID);	
 			//Debug.LogError(playerManager.isTagger);

@@ -121,12 +121,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 		}
 	}
 
-	public void SwapTagger(bool state)
-	{
-		//Debug.LogError(PV.Owner);
-		isTagger = state;
-		//PV.RPC(nameof(RPC_LocalTagger), RpcTarget.All, state);
-	}
 
 
 	#region RPC_FUNCTIONS

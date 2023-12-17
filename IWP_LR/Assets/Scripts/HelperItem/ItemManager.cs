@@ -53,7 +53,7 @@ public class ItemManager : MonoBehaviour, IPunObservable
 
 
                 sceneItems[i] = collectibleObj.GetComponent<PhotonView>().ViewID;
-                itemSpawnpoints[i].waypoint.SetActive(true);
+                //itemSpawnpoints[i].waypoint.SetActive(true);
 
             }
         }
@@ -89,28 +89,23 @@ public class ItemManager : MonoBehaviour, IPunObservable
 
         if (itemPV != null)
         {
-            Debug.Log($"Before Ownership Transfer - IsMine: {itemPV.IsMine}, Owner: {itemPV.Owner}");
-
-            // Transfer ownership to the master client
-            //if (PhotonNetwork.IsMasterClient)
-            {
-                itemPV.TransferOwnership(PhotonNetwork.MasterClient);
-            }
-
-            Debug.Log($"After Ownership Transfer - IsMine: {itemPV.IsMine}, Owner: {itemPV.Owner}");
+            Debug.Log(itemPV);
+            itemPV.TransferOwnership(PhotonNetwork.MasterClient);
 
             // Destroy the object (now the master client should have ownership)
             for (int i = 0; i < sceneItems.Length; i++)
             {
                 if (itemPV.ViewID == sceneItems[i])
                 {
+                    Debug.Log("Removed");
                     sceneItems[i] = -1;
                     itemSpawnpoints[i].waypoint.SetActive(false);
                     break;
                 }
             }
 
-            PhotonNetwork.Destroy(itemPV.gameObject);
+            if (PhotonNetwork.IsMasterClient)
+                PhotonNetwork.Destroy(itemPV.gameObject);
         }
     }
 

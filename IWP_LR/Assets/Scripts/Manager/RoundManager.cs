@@ -33,6 +33,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
 
     bool startCountDown = false;
 
+    float[] timeRanges = { 1.5f, 2, 3 };
+
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -106,7 +108,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         if (PhotonNetwork.IsMasterClient)
         {
             int seed = TagManager.SeedGenerator();
-            photonView.RPC(nameof(RPC_StartRound), RpcTarget.All, seed);
+            photonView.RPC(nameof(RPC_StartRound), RpcTarget.AllViaServer, seed);
         }
     }
 
@@ -139,7 +141,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     private void RPC_StartRound(int randomSeed)
     {
-        currentRoundTime = roundDuration;
+        currentRoundTime = CalculateTimer() ;
         cooldown = 5f;
         isStarted = true;
 
@@ -162,8 +164,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (player.isTagger)
         {
-            photonView.RPC(nameof(RPC_KillSurroundingPlayers), RpcTarget.All, player.controllerPosition);
-            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.All);
+            photonView.RPC(nameof(RPC_KillSurroundingPlayers), RpcTarget.AllViaServer, player.controllerPosition);
+            photonView.RPC(nameof(RPC_UpdatePlayerCount), RpcTarget.AllViaServer);
         }
 
         startCountDown = true;
@@ -178,7 +180,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     // End Game
     [PunRPC]
     private void RPC_EndGame()
-    {  
+    {
+        ToggleMouse.OnCursor();
         PhotonNetwork.LoadLevel(0);
     }
     [PunRPC]
@@ -276,6 +279,21 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             goal_Text.text = "Goal: Run Away!";
             goal_Text.color = Color.green;
         }
+    }
+
+    public float CalculateTimer()
+    {
+        int count = TagManager.Instance.existingPlayerList.Count;
+
+        float divide = 1;
+        if (count > 10)
+            divide = timeRanges[0];
+        else if (count > 6)
+            divide = timeRanges[1];
+        else if (count > 0)
+            divide = timeRanges[2];
+
+        return roundDuration;
     }
     #endregion
 

@@ -13,7 +13,8 @@ public class UpdateItemQuantity : MonoBehaviourPun
         {
             // Call RPC on the stored GameObject
             ItemManager.Instance.UpdateInventory(itemIndex, otherPhotonView);
-            ItemManager.Instance.pv.RPC("RPC_DestroyItem", RpcTarget.All, pv.ViewID);
+            ItemManager.Instance.pv.RPC("RPC_DestroyItem", RpcTarget.AllViaServer, pv.ViewID);
+            //PhotonNetwork.Destroy(pv.gameObject);
         }
     }
    
