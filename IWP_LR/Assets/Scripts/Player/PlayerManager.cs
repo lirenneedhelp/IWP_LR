@@ -139,7 +139,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
 		//Debug.LogError("Owner:" + PhotonNetwork.LocalPlayer);
 		// TAGGER
-		Debug.LogError(taggerIndex);
+		//Debug.LogError(taggerIndex);
 		if (taggerIndex < TagManager.Instance.existingPlayerList.Count)
 		{
 			TagManager.Instance.tagger = TagManager.Instance.existingPlayerList[taggerIndex];

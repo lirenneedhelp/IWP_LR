@@ -19,6 +19,9 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField]
     GameObject popUpDisplay;
 
+    [SerializeField]
+    GameObject winnerDisplay;
+
     PlayerManager player;
 
     private float currentRoundTime;
@@ -81,11 +84,10 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
                         StartRound();
                     else
                     {
-                        Debug.Log("Winner Is" + TagManager.Instance.existingPlayerList[0].NickName);
                         if (!loaded)
                         {
+                            Debug.Log("Winner Is" + TagManager.Instance.existingPlayerList[0].NickName);
                             photonView.RPC(nameof(RPC_EndGame), RpcTarget.All);
-                            loaded = true;
                         }
 
                     }
@@ -151,11 +153,9 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
             //TagManager.GenerateTagger(randomSeed);
             player.UpdateTaggers(TagManager.GenerateTagger(randomSeed));
             StartCoroutine(CountdownEvent(currentRoundTime * 0.5f));
+            photonView.RPC(nameof(PopUp), RpcTarget.All);
+
         }
-
-        photonView.RPC(nameof(PopUp), RpcTarget.All);
-        
-
 
     }
     // Kill Off Tagger
@@ -181,8 +181,16 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     private void RPC_EndGame()
     {
+        if (!loaded)
+            winnerDisplay.transform.Find("PopUp").Find("win_text").GetComponent<TMP_Text>().text += TagManager.Instance.existingPlayerList[0].NickName;
+
+        loaded = true;
         ToggleMouse.OnCursor();
-        PhotonNetwork.LoadLevel(0);
+
+        Instantiate(winnerDisplay);
+        
+        if (PhotonNetwork.IsMasterClient)
+            StartCoroutine(BackToLobby(5f));
     }
     [PunRPC]
     private void RPC_CheckForExistingTaggers()
@@ -318,6 +326,13 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         yield return new WaitForSeconds(midRoundDuration);
 
         CallRandomEvent();
+    }
+
+    private IEnumerator BackToLobby(float duration)
+    {
+        yield return new WaitForSeconds(duration);
+
+        PhotonNetwork.LoadLevel(0);
     }
 
 

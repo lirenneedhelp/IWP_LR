@@ -238,7 +238,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 7118783745189060613}
-  rotationSpeed: 30
   moveSpeed: 1
   moveDistance: 0.1
   heightAboveFloor: 1

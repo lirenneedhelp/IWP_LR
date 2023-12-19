@@ -70,7 +70,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 796616124354910311}
-  rotationSpeed: 30
   moveSpeed: 0.6
   moveDistance: 0.5
   heightAboveFloor: 1
