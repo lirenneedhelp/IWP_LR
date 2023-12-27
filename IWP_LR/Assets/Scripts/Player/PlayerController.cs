@@ -59,7 +59,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 		animator = GetComponent<Animator>();
 
 		playerManager = PhotonView.Find((int)PV.InstantiationData[0]).GetComponent<PlayerManager>();
-		ToggleMouse.OffCursor();
+		//ToggleMouse.OffCursor();
 
 		cacheWalkSpeed = walkSpeed;
 		cacheSprintSpeed = sprintSpeed;

@@ -53,7 +53,7 @@ public class ItemManager : MonoBehaviour, IPunObservable
 
 
                 sceneItems[i] = collectibleObj.GetComponent<PhotonView>().ViewID;
-                //itemSpawnpoints[i].waypoint.SetActive(true);
+                itemSpawnpoints[i].waypoint.SetActive(true);
 
             }
         }

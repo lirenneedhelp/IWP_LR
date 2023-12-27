@@ -256,7 +256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemInfo: {fileID: 11400000, guid: 3624be82293b3714199984f15099dc8b, type: 2}
   itemGameObject: {fileID: 4297711710179997041}
-  potionEffectTrail: {fileID: 2646111451742039879, guid: 8ea9e5de5c35425418b1372d334852c0,
+  potionEffectTrail: {fileID: 2646111451742039879, guid: df083a8ae528df643b358220dad44f7b,
     type: 3}
   jump_boost: 1.5
   playerController: {fileID: 0}
