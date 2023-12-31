@@ -8,7 +8,7 @@ public class DartManager : MonoBehaviour
 {
     public static DartManager Instance = null;
 
-    public float destroyDelay = 5f;
+    public float destroyDelay = 10f;
 
     void Awake()
     {
@@ -28,12 +28,12 @@ public class DartManager : MonoBehaviour
         Vector3 offset = new(0, -90, 0);
         dart.transform.localEulerAngles += offset;
         // After a delay, destroy the dart across the network
-        StartCoroutine(DestroyDartDelayed(dart));
+        //StartCoroutine(DestroyDartDelayed(dart));
 
         return dart;
     }
 
-    IEnumerator DestroyDartDelayed(GameObject dart)
+    public IEnumerator DestroyDartDelayed(GameObject dart)
     {
         yield return new WaitForSeconds(destroyDelay);
 

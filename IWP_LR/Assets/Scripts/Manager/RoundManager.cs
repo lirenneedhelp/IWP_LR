@@ -182,7 +182,7 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     private void RPC_EndGame()
     {
         if (!loaded)
-            winnerDisplay.transform.Find("PopUp").Find("win_text").GetComponent<TMP_Text>().text += TagManager.Instance.existingPlayerList[0].NickName;
+            winnerDisplay.transform.Find("PopUp").Find("win_text").GetComponent<TMP_Text>().text = "The Winner Is " + TagManager.Instance.existingPlayerList[0].NickName;
 
         loaded = true;
         ToggleMouse.OnCursor();

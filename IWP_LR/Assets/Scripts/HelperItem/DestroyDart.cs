@@ -9,9 +9,9 @@ public class DestroyDart : MonoBehaviourPun
 
     Vector3 targetPos;
 
-    float shootForce = 20f;
+    float shootForce = 5f;
 
-    bool initialised = false;
+    //bool initialised = false;
 
     float height;
 
@@ -21,46 +21,51 @@ public class DestroyDart : MonoBehaviourPun
 
     Vector3 firepos;
 
+    PlayerController pc;
+
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
 
-        if (photonView.IsMine)
-        {
-            Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f));
+        //if (photonView.IsMine)
+        //{
+        //    pc = PlayerManager.Find(PhotonNetwork.LocalPlayer).controller.GetComponent<PlayerController>();
+        //    Ray ray = pc.cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
 
-            dir = ray.direction;
-            firepos = ray.origin;
+        //    dir = ray.direction;
+        //    firepos = ray.origin;
 
-            groundDirection = new Vector3(dir.x, 0, dir.z);
+        //    groundDirection = -pc.cam.transform.forward;
 
-            targetPos = transform.position + dir * shootForce;
-            height = targetPos.y + targetPos.magnitude / 2f;
-            height = Mathf.Max(0.01f, height);
-            Debug.Log(targetPos);
-            Debug.Log(height);
-        }
+        //    targetPos = pc.gameObject.transform.position + dir * shootForce;
+        //    height = targetPos.y + 1f;
+        //    height = Mathf.Max(0.01f, height);
+        //    Debug.Log(targetPos);
+        //    Debug.Log(height);
+        //    Debug.Log(firepos);
+        //}
     }
 
     private void Update()
     {
-        float angle;
-        float v0;
-        float time;
-        CalculatePathWithHeight(targetPos, height, out v0, out angle, out time);
+        //float angle;
+        //float v0;
+        //float time;
+        //CalculatePathWithHeight(targetPos, height, out v0, out angle, out time);
 
-        if (!initialised)
-        {
-            StopAllCoroutines();
-            StartCoroutine(Dart_Movement(groundDirection, v0, angle, time));
-            initialised = true;
-        }
+        //if (!initialised)
+        //{
+        //    StopAllCoroutines();
+        //    StartCoroutine(Dart_Movement(-dir, v0, angle, time));
+        //    initialised = true;
+        //}
     }
 
     void OnCollisionEnter(Collision collision)
     {
         rb.isKinematic = true;
+        photonView.RPC(nameof(RPC_DestroyDart), RpcTarget.AllViaServer);
 
         if (photonView.IsMine)
             return;
@@ -105,19 +110,21 @@ public class DestroyDart : MonoBehaviourPun
             }
         }
 
+    }
+    [PunRPC]
+    void RPC_DestroyDart()
+    {
         // Destroy the dart on the shooter's client after RPC is completed
         if (PhotonNetwork.IsMasterClient)
         {
-            StartCoroutine(DelayDartDestruction(10f));
+            StartCoroutine(DartManager.Instance.DestroyDartDelayed(photonView.gameObject));
         }
-
     }
-
-    private IEnumerator DelayDartDestruction(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        PhotonNetwork.Destroy(photonView.gameObject);
-    }
+    //private IEnumerator DelayDartDestruction(float delay)
+    //{
+    //    yield return new WaitForSeconds(delay);
+    //    PhotonNetwork.Destroy(photonView.gameObject);
+    //}
 
     IEnumerator Dart_Movement(Vector3 direction, float v0, float angle, float time)
     {

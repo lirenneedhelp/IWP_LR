@@ -50,10 +50,9 @@ public class ItemManager : MonoBehaviour, IPunObservable
                     itemPos.x += -3.65f;
 
                 GameObject collectibleObj = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", itemPrefabs[randomItemIndex].name), itemPos, itemSpawnpoints[i].transform.rotation, 0, new object[] { pv.ViewID });
+                int itemViewID = collectibleObj.GetComponent<PhotonView>().ViewID;
 
-
-                sceneItems[i] = collectibleObj.GetComponent<PhotonView>().ViewID;
-                itemSpawnpoints[i].waypoint.SetActive(true);
+                pv.RPC(nameof(RPC_ActivateWaypoints), RpcTarget.AllViaServer, i, itemViewID);  
 
             }
         }
@@ -90,7 +89,7 @@ public class ItemManager : MonoBehaviour, IPunObservable
         if (itemPV != null)
         {
             Debug.Log(itemPV);
-            itemPV.TransferOwnership(PhotonNetwork.MasterClient);
+            //itemPV.TransferOwnership(PhotonNetwork.MasterClient);
 
             // Destroy the object (now the master client should have ownership)
             for (int i = 0; i < sceneItems.Length; i++)
@@ -107,6 +106,13 @@ public class ItemManager : MonoBehaviour, IPunObservable
             if (PhotonNetwork.IsMasterClient)
                 PhotonNetwork.Destroy(itemPV.gameObject);
         }
+    }
+
+    [PunRPC]
+    void RPC_ActivateWaypoints(int index, int item_viewID)
+    {
+        itemSpawnpoints[index].waypoint.SetActive(true);
+        sceneItems[index] = item_viewID;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
