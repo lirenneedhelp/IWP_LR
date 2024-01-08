@@ -7,6 +7,10 @@ public class AudioManager : MonoBehaviour
     public static AudioManager Instance = null;
 
     public AudioClip[] audioClips;
+
+    public AudioClip bgmClip;       // Background music
+
+    private AudioSource bgmSource;
     private void Awake()
     {
         if (!Instance)
@@ -21,6 +25,13 @@ public class AudioManager : MonoBehaviour
     }
     private void Start()
     {
+        // Initialize background music source
+        bgmSource = gameObject.AddComponent<AudioSource>();
+        bgmSource.clip = bgmClip;
+        bgmSource.loop = true;
+        bgmSource.spatialBlend = 0f;  // No 3D spatialization for background music
+        // You can add more audio settings here (e.g., volume, pitch, etc.)
+
         // Load audio clips and assign them to AudioSource components
         foreach (var clip in audioClips)
         {
@@ -49,5 +60,23 @@ public class AudioManager : MonoBehaviour
         {
             Debug.LogWarning($"Sound '{soundName}' not found.");
         }
+    }
+    // Play background music
+    public void PlayBGM()
+    {
+        if (bgmClip != null)
+        {
+            bgmSource.Play();
+        }
+        else
+        {
+            Debug.LogWarning("No background music assigned.");
+        }
+    }
+
+    // Stop background music
+    public void StopBGM()
+    {
+        bgmSource.Stop();
     }
 }

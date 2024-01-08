@@ -59,6 +59,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         StartRound();
         UpdatePeopleStatus();
 
+        AudioManager.Instance.PlayBGM();
+
     }
 
     private void Update()
@@ -188,7 +190,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
         ToggleMouse.OnCursor();
 
         Instantiate(winnerDisplay);
-        
+        AudioManager.Instance.StopBGM();
+
         if (PhotonNetwork.IsMasterClient)
             StartCoroutine(BackToLobby(5f));
     }
