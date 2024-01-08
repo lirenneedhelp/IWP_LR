@@ -278,6 +278,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 	{
 		//PV.RPC(nameof(RPC_TakeDamage), PV.Owner, damage);
 		ApplyKnockback(dir);
+		AudioManager.Instance.PlaySound("hurt", transform.position);
 		PV.RPC(nameof(RPC_SwapTagger), RpcTarget.AllViaServer);
 	}
 	public void ApplyKnockback(Vector3 knockbackDirection)

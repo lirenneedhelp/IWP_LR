@@ -23,6 +23,7 @@ public class SingleShotGun : Gun
 	public override void Use()
 	{
 		Shoot();
+		PV.RPC(nameof(RPC_PlayPunch), RpcTarget.AllViaServer, transform.position);
 	}
 
 	void Shoot()
@@ -52,5 +53,10 @@ public class SingleShotGun : Gun
 			bulletImpactObj.transform.SetParent(colliders[0].transform);
 		}
 	}
+	[PunRPC]
+	void RPC_PlayPunch(Vector3 position)
+    {
+		AudioManager.Instance.PlaySound("punch", position);
+    }
 
 }

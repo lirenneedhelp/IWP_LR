@@ -208,6 +208,8 @@ public class RoundManager : MonoBehaviourPunCallbacks, IPunObservable
     private void RPC_KillSurroundingPlayers(Vector3 taggerPos)
     {
         Instantiate(ExplosionVFX, taggerPos, Quaternion.identity);
+        AudioManager.Instance.PlaySound("explosion", taggerPos);
+
 
         GameObject[] playerControllers = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject GO in playerControllers)
